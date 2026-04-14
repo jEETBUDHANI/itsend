@@ -1,3 +1,157 @@
+/* ═════════════════════════════════════════════════════════════ */
+/* TRAVELING LINE ANIMATIONS (Animated gradient border line) */
+/* ═════════════════════════════════════════════════════════════ */
+
+@keyframes travelingLineBlue {
+  0% {
+    background: conic-gradient(
+      from 0deg,
+      rgba(59, 130, 246, 1) 0deg,
+      rgba(96, 165, 250, 1) 30deg,
+      rgba(59, 130, 246, 0.3) 60deg,
+      rgba(59, 130, 246, 0.1) 90deg,
+      transparent 120deg,
+      transparent 360deg
+    );
+  }
+  100% {
+    background: conic-gradient(
+      from 360deg,
+      rgba(59, 130, 246, 1) 360deg,
+      rgba(96, 165, 250, 1) 390deg,
+      rgba(59, 130, 246, 0.3) 420deg,
+      rgba(59, 130, 246, 0.1) 450deg,
+      transparent 480deg,
+      transparent 720deg
+    );
+  }
+}
+
+@keyframes travelingLinePurple {
+  0% {
+    background: conic-gradient(
+      from 0deg,
+      rgba(168, 85, 247, 1) 0deg,
+      rgba(192, 132, 252, 1) 30deg,
+      rgba(168, 85, 247, 0.3) 60deg,
+      rgba(168, 85, 247, 0.1) 90deg,
+      transparent 120deg,
+      transparent 360deg
+    );
+  }
+  100% {
+    background: conic-gradient(
+      from 360deg,
+      rgba(168, 85, 247, 1) 360deg,
+      rgba(192, 132, 252, 1) 390deg,
+      rgba(168, 85, 247, 0.3) 420deg,
+      rgba(168, 85, 247, 0.1) 450deg,
+      transparent 480deg,
+      transparent 720deg
+    );
+  }
+}
+
+@keyframes travelingLineGreen {
+  0% {
+    background: conic-gradient(
+      from 0deg,
+      rgba(34, 197, 94, 1) 0deg,
+      rgba(74, 222, 128, 1) 30deg,
+      rgba(34, 197, 94, 0.3) 60deg,
+      rgba(34, 197, 94, 0.1) 90deg,
+      transparent 120deg,
+      transparent 360deg
+    );
+  }
+  100% {
+    background: conic-gradient(
+      from 360deg,
+      rgba(34, 197, 94, 1) 360deg,
+      rgba(74, 222, 128, 1) 390deg,
+      rgba(34, 197, 94, 0.3) 420deg,
+      rgba(34, 197, 94, 0.1) 450deg,
+      transparent 480deg,
+      transparent 720deg
+    );
+  }
+}
+
+@keyframes travelingLineCyan {
+  0% {
+    background: conic-gradient(
+      from 0deg,
+      rgba(34, 211, 238, 1) 0deg,
+      rgba(165, 243, 252, 1) 30deg,
+      rgba(34, 211, 238, 0.3) 60deg,
+      rgba(34, 211, 238, 0.1) 90deg,
+      transparent 120deg,
+      transparent 360deg
+    );
+  }
+  100% {
+    background: conic-gradient(
+      from 360deg,
+      rgba(34, 211, 238, 1) 360deg,
+      rgba(165, 243, 252, 1) 390deg,
+      rgba(34, 211, 238, 0.3) 420deg,
+      rgba(34, 211, 238, 0.1) 450deg,
+      transparent 480deg,
+      transparent 720deg
+    );
+  }
+}
+
+@keyframes travelingLineYellow {
+  0% {
+    background: conic-gradient(
+      from 0deg,
+      rgba(234, 179, 8, 1) 0deg,
+      rgba(253, 224, 71, 1) 30deg,
+      rgba(234, 179, 8, 0.3) 60deg,
+      rgba(234, 179, 8, 0.1) 90deg,
+      transparent 120deg,
+      transparent 360deg
+    );
+  }
+  100% {
+    background: conic-gradient(
+      from 360deg,
+      rgba(234, 179, 8, 1) 360deg,
+      rgba(253, 224, 71, 1) 390deg,
+      rgba(234, 179, 8, 0.3) 420deg,
+      rgba(234, 179, 8, 0.1) 450deg,
+      transparent 480deg,
+      transparent 720deg
+    );
+  }
+}
+
+@keyframes travelingLineBlue {
+  0% {
+    background: conic-gradient(
+      from 0deg,
+      rgba(59, 130, 246, 1) 0deg,
+      rgba(96, 165, 250, 1) 30deg,
+      rgba(59, 130, 246, 0.3) 60deg,
+      rgba(59, 130, 246, 0.1) 90deg,
+      transparent 120deg,
+      transparent 360deg
+    );
+  }
+  100% {
+    background: conic-gradient(
+      from 360deg,
+      rgba(59, 130, 246, 1) 360deg,
+      rgba(96, 165, 250, 1) 390deg,
+      rgba(59, 130, 246, 0.3) 420deg,
+      rgba(59, 130, 246, 0.1) 450deg,
+      transparent 480deg,
+      transparent 720deg
+    );
+  }
+}
+
 /* BLUE TRAVELING BORDER ANIMATION */
 @keyframes travelingBorderBlue {
   0% {
@@ -145,32 +299,165 @@
 
 /* Blue Border - Unselected */
 .cardBlueBorder {
+  position: relative;
   animation: travelingBorderBlue 4s linear infinite;
   transition: all 0.3s ease;
+  border: 6px solid transparent;
+  background-clip: padding-box;
+}
+
+.cardBlueBorder::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  padding: 6px;
+  background: conic-gradient(
+    from 0deg,
+    rgba(59, 130, 246, 1) 0deg,
+    rgba(96, 165, 250, 0.8) 45deg,
+    rgba(59, 130, 246, 0.3) 90deg,
+    transparent 180deg,
+    transparent 360deg
+  );
+  animation: travelingLineBlue 3s linear infinite;
+  pointer-events: none;
+  border-radius: 1rem;
+}
+
+.cardBlueBorder > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Purple Border - Unselected */
 .cardPurpleBorder {
+  position: relative;
   animation: travelingBorderPurple 4s linear infinite;
   transition: all 0.3s ease;
+  border: 6px solid transparent;
+  background-clip: padding-box;
+}
+
+.cardPurpleBorder::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  padding: 6px;
+  background: conic-gradient(
+    from 0deg,
+    rgba(168, 85, 247, 1) 0deg,
+    rgba(192, 132, 252, 0.8) 45deg,
+    rgba(168, 85, 247, 0.3) 90deg,
+    transparent 180deg,
+    transparent 360deg
+  );
+  animation: travelingLinePurple 3s linear infinite;
+  pointer-events: none;
+  border-radius: 1rem;
+}
+
+.cardPurpleBorder > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Green Border - Unselected */
 .cardGreenBorder {
+  position: relative;
   animation: travelingBorderGreen 4s linear infinite;
   transition: all 0.3s ease;
+  border: 6px solid transparent;
+  background-clip: padding-box;
+}
+
+.cardGreenBorder::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  padding: 6px;
+  background: conic-gradient(
+    from 0deg,
+    rgba(34, 197, 94, 1) 0deg,
+    rgba(74, 222, 128, 0.8) 45deg,
+    rgba(34, 197, 94, 0.3) 90deg,
+    transparent 180deg,
+    transparent 360deg
+  );
+  animation: travelingLineGreen 3s linear infinite;
+  pointer-events: none;
+  border-radius: 1rem;
+}
+
+.cardGreenBorder > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Cyan Border - Unselected */
 .cardCyanBorder {
+  position: relative;
   animation: travelingBorderCyan 4s linear infinite;
   transition: all 0.3s ease;
+  border: 6px solid transparent;
+  background-clip: padding-box;
+}
+
+.cardCyanBorder::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  padding: 6px;
+  background: conic-gradient(
+    from 0deg,
+    rgba(34, 211, 238, 1) 0deg,
+    rgba(165, 243, 252, 0.8) 45deg,
+    rgba(34, 211, 238, 0.3) 90deg,
+    transparent 180deg,
+    transparent 360deg
+  );
+  pointer-events: none;
+  border-radius: 1rem;
+}
+
+.cardCyanBorder > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Yellow Border - Unselected */
 .cardYellowBorder {
+  position: relative;
   animation: travelingBorderYellow 4s linear infinite;
   transition: all 0.3s ease;
+  border: 6px solid transparent;
+  background-clip: padding-box;
+}
+
+.cardYellowBorder::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  padding: 6px;
+  background: conic-gradient(
+    from 0deg,
+    rgba(234, 179, 8, 1) 0deg,
+    rgba(253, 224, 71, 0.8) 45deg,
+    rgba(234, 179, 8, 0.3) 90deg,
+    transparent 180deg,
+    transparent 360deg
+  );
+  pointer-events: none;
+  border-radius: 1rem;
+}
+
+.cardYellowBorder > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* SELECTED/HOVERED STATE - BLUE */
@@ -185,6 +472,11 @@
     0 0 80px rgba(96, 165, 250, 0.3) !important;
 }
 
+.cardBlueBorder.selected::before,
+.cardBlueBorder:hover::before {
+  animation: travelingLineBlue 2s linear infinite !important;
+}
+
 /* SELECTED/HOVERED STATE - PURPLE */
 .cardPurpleBorder.selected,
 .cardPurpleBorder:hover {
@@ -195,6 +487,11 @@
     8px 0px 40px rgba(192, 132, 252, 0.8),
     0 0 60px rgba(168, 85, 247, 0.6),
     0 0 80px rgba(192, 132, 252, 0.3) !important;
+}
+
+.cardPurpleBorder.selected::before,
+.cardPurpleBorder:hover::before {
+  animation: travelingLinePurple 2s linear infinite !important;
 }
 
 /* SELECTED/HOVERED STATE - GREEN */
@@ -209,6 +506,11 @@
     0 0 80px rgba(74, 222, 128, 0.3) !important;
 }
 
+.cardGreenBorder.selected::before,
+.cardGreenBorder:hover::before {
+  animation: travelingLineGreen 2s linear infinite !important;
+}
+
 /* SELECTED/HOVERED STATE - CYAN */
 .cardCyanBorder.selected,
 .cardCyanBorder:hover {
@@ -221,6 +523,11 @@
     0 0 80px rgba(165, 243, 252, 0.3) !important;
 }
 
+.cardCyanBorder.selected::before,
+.cardCyanBorder:hover::before {
+  animation: travelingLineCyan 2s linear infinite !important;
+}
+
 /* SELECTED/HOVERED STATE - YELLOW */
 .cardYellowBorder.selected,
 .cardYellowBorder:hover {
@@ -231,4 +538,9 @@
     8px 0px 40px rgba(253, 224, 71, 0.8),
     0 0 60px rgba(234, 179, 8, 0.6),
     0 0 80px rgba(253, 224, 71, 0.3) !important;
+}
+
+.cardYellowBorder.selected::before,
+.cardYellowBorder:hover::before {
+  animation: travelingLineYellow 2s linear infinite !important;
 }
