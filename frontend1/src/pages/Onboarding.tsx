@@ -172,7 +172,7 @@ const Onboarding = () => {
                                     onClick={() => { setData({ ...data, role: 'student' }); nextStep(); }}
                                     className="cursor-pointer"
                                 >
-                                    <Card className={`p-8 bg-slate-950 border-2 border-blue-500 transition-all duration-300 rounded-2xl ${styles.cardBlueBorder}`}>
+                                    <Card className={`p-8 bg-slate-950 border-2 border-blue-500 transition-all duration-300 rounded-2xl ${styles.cardBlueBorder} ${data.role === 'student' ? styles.selected : ''}`}>
                                         <GraduationCap className="w-16 h-16 mb-5 text-blue-400" />
                                         <h3 className="text-3xl font-black tracking-tight mb-3 text-white">
                                             I'm a Student
@@ -189,7 +189,7 @@ const Onboarding = () => {
                                     onClick={() => { setData({ ...data, role: 'professor' }); nextStep(); }}
                                     className="cursor-pointer"
                                 >
-                                    <Card className={`p-8 bg-slate-950 border-2 border-purple-500 transition-all duration-300 rounded-2xl ${styles.cardPurpleBorder}`}>
+                                    <Card className={`p-8 bg-slate-950 border-2 border-purple-500 transition-all duration-300 rounded-2xl ${styles.cardPurpleBorder} ${data.role === 'professor' ? styles.selected : ''}`}>
                                         <Users className="w-16 h-16 mb-5 text-purple-400" />
                                         <h3 className="text-3xl font-black tracking-tight mb-3 text-white">
                                             I'm a Professor
@@ -237,7 +237,7 @@ const Onboarding = () => {
                                         onClick={() => setData({ ...data, academicStage: stage.value as any })}
                                         className="cursor-pointer"
                                     >
-                                        <Card className={`p-8 text-center relative bg-slate-950 border-2 border-blue-500 transition-all duration-300 rounded-2xl ${styles.cardBlueBorder}`}>
+                                        <Card className={`p-8 text-center relative bg-slate-950 border-2 border-blue-500 transition-all duration-300 rounded-2xl ${styles.cardBlueBorder} ${data.academicStage === stage.value ? styles.selected : ''}`}>
                                             {data.academicStage === stage.value && (
                                                 <motion.div
                                                     initial={{ scale: 0 }}
@@ -314,7 +314,7 @@ const Onboarding = () => {
                                         onClick={() => setData({ ...data, stream: stream.value as any })}
                                         className="cursor-pointer"
                                     >
-                                        <Card className={`p-6 text-center relative bg-slate-950 border-2 border-purple-500 transition-all duration-300 rounded-2xl ${styles.cardPurpleBorder}`}>
+                                        <Card className={`p-6 text-center relative bg-slate-950 border-2 border-purple-500 transition-all duration-300 rounded-2xl ${styles.cardPurpleBorder} ${data.stream === stream.value ? styles.selected : ''}`}>
                                             {data.stream === stream.value && (
                                                 <motion.div
                                                     initial={{ scale: 0 }}
@@ -401,7 +401,7 @@ const Onboarding = () => {
                                             }}
                                             className="cursor-pointer"
                                         >
-                                            <Card className={`p-4 text-center bg-slate-950 border-2 border-green-500 transition-all duration-300 rounded-2xl ${styles.cardGreenBorder}`}>
+                                            <Card className={`p-4 text-center bg-slate-950 border-2 border-green-500 transition-all duration-300 rounded-2xl ${styles.cardGreenBorder} ${isSelected ? styles.selected : ''}`}>
                                                 <div className="text-3xl mb-2">{interest.icon}</div>
                                                 <div className="text-base font-bold tracking-tight text-white">{interest.label}</div>
                                             </Card>

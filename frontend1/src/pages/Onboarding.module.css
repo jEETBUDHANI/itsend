@@ -1,47 +1,234 @@
-@keyframes borderGlow {
+/* BLUE TRAVELING BORDER ANIMATION */
+@keyframes travelingBorderBlue {
   0% {
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5), 0 0 20px rgba(96, 165, 250, 0.3);
+    box-shadow: 
+      -8px 0px 20px rgba(59, 130, 246, 0.8),
+      0 0 30px rgba(96, 165, 250, 0.3);
+  }
+  25% {
+    box-shadow: 
+      0px -8px 20px rgba(59, 130, 246, 0.8),
+      0 0 30px rgba(96, 165, 250, 0.3);
   }
   50% {
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.8), 0 0 30px rgba(96, 165, 250, 0.5);
+    box-shadow: 
+      8px 0px 20px rgba(59, 130, 246, 0.8),
+      0 0 30px rgba(96, 165, 250, 0.3);
+  }
+  75% {
+    box-shadow: 
+      0px 8px 20px rgba(59, 130, 246, 0.8),
+      0 0 30px rgba(96, 165, 250, 0.3);
   }
   100% {
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5), 0 0 20px rgba(96, 165, 250, 0.3);
+    box-shadow: 
+      -8px 0px 20px rgba(59, 130, 246, 0.8),
+      0 0 30px rgba(96, 165, 250, 0.3);
   }
 }
 
-@keyframes borderGlowPurple {
+/* PURPLE TRAVELING BORDER ANIMATION */
+@keyframes travelingBorderPurple {
   0% {
-    box-shadow: 0 0 10px rgba(168, 85, 247, 0.5), 0 0 20px rgba(192, 132, 252, 0.3);
+    box-shadow: 
+      -8px 0px 20px rgba(168, 85, 247, 0.8),
+      0 0 30px rgba(192, 132, 252, 0.3);
+  }
+  25% {
+    box-shadow: 
+      0px -8px 20px rgba(168, 85, 247, 0.8),
+      0 0 30px rgba(192, 132, 252, 0.3);
   }
   50% {
-    box-shadow: 0 0 15px rgba(168, 85, 247, 0.8), 0 0 30px rgba(192, 132, 252, 0.5);
+    box-shadow: 
+      8px 0px 20px rgba(168, 85, 247, 0.8),
+      0 0 30px rgba(192, 132, 252, 0.3);
+  }
+  75% {
+    box-shadow: 
+      0px 8px 20px rgba(168, 85, 247, 0.8),
+      0 0 30px rgba(192, 132, 252, 0.3);
   }
   100% {
-    box-shadow: 0 0 10px rgba(168, 85, 247, 0.5), 0 0 20px rgba(192, 132, 252, 0.3);
+    box-shadow: 
+      -8px 0px 20px rgba(168, 85, 247, 0.8),
+      0 0 30px rgba(192, 132, 252, 0.3);
   }
 }
 
-@keyframes borderGlowGreen {
+/* GREEN TRAVELING BORDER ANIMATION */
+@keyframes travelingBorderGreen {
   0% {
-    box-shadow: 0 0 10px rgba(34, 197, 94, 0.5), 0 0 20px rgba(74, 222, 128, 0.3);
+    box-shadow: 
+      -8px 0px 20px rgba(34, 197, 94, 0.8),
+      0 0 30px rgba(74, 222, 128, 0.3);
+  }
+  25% {
+    box-shadow: 
+      0px -8px 20px rgba(34, 197, 94, 0.8),
+      0 0 30px rgba(74, 222, 128, 0.3);
   }
   50% {
-    box-shadow: 0 0 15px rgba(34, 197, 94, 0.8), 0 0 30px rgba(74, 222, 128, 0.5);
+    box-shadow: 
+      8px 0px 20px rgba(34, 197, 94, 0.8),
+      0 0 30px rgba(74, 222, 128, 0.3);
+  }
+  75% {
+    box-shadow: 
+      0px 8px 20px rgba(34, 197, 94, 0.8),
+      0 0 30px rgba(74, 222, 128, 0.3);
   }
   100% {
-    box-shadow: 0 0 10px rgba(34, 197, 94, 0.5), 0 0 20px rgba(74, 222, 128, 0.3);
+    box-shadow: 
+      -8px 0px 20px rgba(34, 197, 94, 0.8),
+      0 0 30px rgba(74, 222, 128, 0.3);
   }
 }
 
+/* CYAN TRAVELING BORDER ANIMATION */
+@keyframes travelingBorderCyan {
+  0% {
+    box-shadow: 
+      -8px 0px 20px rgba(34, 211, 238, 0.8),
+      0 0 30px rgba(165, 243, 252, 0.3);
+  }
+  25% {
+    box-shadow: 
+      0px -8px 20px rgba(34, 211, 238, 0.8),
+      0 0 30px rgba(165, 243, 252, 0.3);
+  }
+  50% {
+    box-shadow: 
+      8px 0px 20px rgba(34, 211, 238, 0.8),
+      0 0 30px rgba(165, 243, 252, 0.3);
+  }
+  75% {
+    box-shadow: 
+      0px 8px 20px rgba(34, 211, 238, 0.8),
+      0 0 30px rgba(165, 243, 252, 0.3);
+  }
+  100% {
+    box-shadow: 
+      -8px 0px 20px rgba(34, 211, 238, 0.8),
+      0 0 30px rgba(165, 243, 252, 0.3);
+  }
+}
+
+/* YELLOW TRAVELING BORDER ANIMATION */
+@keyframes travelingBorderYellow {
+  0% {
+    box-shadow: 
+      -8px 0px 20px rgba(234, 179, 8, 0.8),
+      0 0 30px rgba(253, 224, 71, 0.3);
+  }
+  25% {
+    box-shadow: 
+      0px -8px 20px rgba(234, 179, 8, 0.8),
+      0 0 30px rgba(253, 224, 71, 0.3);
+  }
+  50% {
+    box-shadow: 
+      8px 0px 20px rgba(234, 179, 8, 0.8),
+      0 0 30px rgba(253, 224, 71, 0.3);
+  }
+  75% {
+    box-shadow: 
+      0px 8px 20px rgba(234, 179, 8, 0.8),
+      0 0 30px rgba(253, 224, 71, 0.3);
+  }
+  100% {
+    box-shadow: 
+      -8px 0px 20px rgba(234, 179, 8, 0.8),
+      0 0 30px rgba(253, 224, 71, 0.3);
+  }
+}
+
+/* Blue Border - Unselected */
 .cardBlueBorder {
-  animation: borderGlow 2s ease-in-out infinite;
+  animation: travelingBorderBlue 4s linear infinite;
+  transition: all 0.3s ease;
 }
 
+/* Purple Border - Unselected */
 .cardPurpleBorder {
-  animation: borderGlowPurple 2s ease-in-out infinite;
+  animation: travelingBorderPurple 4s linear infinite;
+  transition: all 0.3s ease;
 }
 
+/* Green Border - Unselected */
 .cardGreenBorder {
-  animation: borderGlowGreen 2s ease-in-out infinite;
+  animation: travelingBorderGreen 4s linear infinite;
+  transition: all 0.3s ease;
+}
+
+/* Cyan Border - Unselected */
+.cardCyanBorder {
+  animation: travelingBorderCyan 4s linear infinite;
+  transition: all 0.3s ease;
+}
+
+/* Yellow Border - Unselected */
+.cardYellowBorder {
+  animation: travelingBorderYellow 4s linear infinite;
+  transition: all 0.3s ease;
+}
+
+/* SELECTED/HOVERED STATE - BLUE */
+.cardBlueBorder.selected,
+.cardBlueBorder:hover {
+  transform: scale(1.05);
+  animation: travelingBorderBlue 3s linear infinite;
+  box-shadow: 
+    -12px 0px 40px rgba(59, 130, 246, 1),
+    8px 0px 40px rgba(96, 165, 250, 0.8),
+    0 0 60px rgba(59, 130, 246, 0.6),
+    0 0 80px rgba(96, 165, 250, 0.3) !important;
+}
+
+/* SELECTED/HOVERED STATE - PURPLE */
+.cardPurpleBorder.selected,
+.cardPurpleBorder:hover {
+  transform: scale(1.05);
+  animation: travelingBorderPurple 3s linear infinite;
+  box-shadow: 
+    -12px 0px 40px rgba(168, 85, 247, 1),
+    8px 0px 40px rgba(192, 132, 252, 0.8),
+    0 0 60px rgba(168, 85, 247, 0.6),
+    0 0 80px rgba(192, 132, 252, 0.3) !important;
+}
+
+/* SELECTED/HOVERED STATE - GREEN */
+.cardGreenBorder.selected,
+.cardGreenBorder:hover {
+  transform: scale(1.05);
+  animation: travelingBorderGreen 3s linear infinite;
+  box-shadow: 
+    -12px 0px 40px rgba(34, 197, 94, 1),
+    8px 0px 40px rgba(74, 222, 128, 0.8),
+    0 0 60px rgba(34, 197, 94, 0.6),
+    0 0 80px rgba(74, 222, 128, 0.3) !important;
+}
+
+/* SELECTED/HOVERED STATE - CYAN */
+.cardCyanBorder.selected,
+.cardCyanBorder:hover {
+  transform: scale(1.05);
+  animation: travelingBorderCyan 3s linear infinite;
+  box-shadow: 
+    -12px 0px 40px rgba(34, 211, 238, 1),
+    8px 0px 40px rgba(165, 243, 252, 0.8),
+    0 0 60px rgba(34, 211, 238, 0.6),
+    0 0 80px rgba(165, 243, 252, 0.3) !important;
+}
+
+/* SELECTED/HOVERED STATE - YELLOW */
+.cardYellowBorder.selected,
+.cardYellowBorder:hover {
+  transform: scale(1.05);
+  animation: travelingBorderYellow 3s linear infinite;
+  box-shadow: 
+    -12px 0px 40px rgba(234, 179, 8, 1),
+    8px 0px 40px rgba(253, 224, 71, 0.8),
+    0 0 60px rgba(234, 179, 8, 0.6),
+    0 0 80px rgba(253, 224, 71, 0.3) !important;
 }
