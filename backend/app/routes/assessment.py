@@ -33,7 +33,7 @@ def create_progress_snapshot(user_id, assessment_type, scores):
         # Calculate readiness score (based on completion percentage + score quality)
         all_assessments = Assessment.query.filter_by(user_id=user_id).all()
         assessment_types = set(a.assessment_type for a in all_assessments)
-        completion_percentage = len(assessment_types) / 4 * 100  # 4 assessment types
+        completion_percentage = len(assessment_types) / 5 * 100  # 5 assessment types
         
         readiness_score = (completion_percentage * 0.6 + confidence_score * 0.4)
         

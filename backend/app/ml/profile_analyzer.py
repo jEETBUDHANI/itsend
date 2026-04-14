@@ -11,6 +11,147 @@ class ProfileAnalyzer:
         # Get all assessments
         assessments = Assessment.query.filter_by(user_id=user_id).all()
         
+        test_result = TestResult.query.filter_by(user_id=user_id).order_by(TestResult.created_at.desc()).first()
+        
+        if not assessments and not test_result:
+            return None
+        
+        # Organize by type
+        profile_data = {}
+        for assessment in assessments:
+            profile_data[assessment.assessment_type] = assessment.scores
+        
+        # Get career recommendations from TestResult (already queried above)
+        top_careers = []
+        
+        if test_result and test_result.recommendations:
+            print(f"[ProfileAnalyzer] TestResult found: {test_result.recommendations}")
+            
+            # Extract careers from MCQ recommendations (these are simple strings)
+            mcq_careers = test_result.recommendations.get('mcq_careers', [])
+            ml_courses = test_result.recommendations.get('ml_courses', [])
+            
+            print(f"[ProfileAnalyzer] MCQ Careers: {mcq_careers}")
+            print(f"[ProfileAnalyzer] ML Courses: {ml_courses}")
+            
+            # Process MCQ careers (simple strings like "Scientist", "Engineer")
+            for career_name in mcq_careers:
+                if isinstance(career_name, str) and career_name not in [c['name'] for c in top_careers]:
+                    top_careers.append({
+                        'name': career_name,
+                        'match': 90,  # High match since it's from personality test
+                        'salary': 'Varies'
+                    })
+            
+            # Process ML courses (these have 'course' and 'confidence')
+            for course in ml_courses:
+                if isinstance(course, dict):
+                    course_name = course.get('course', '')
+                    if course_name and course_name not in [c['name'] for c in top_careers]:
+                        top_careers.append({
+                            'name': course_name,
+                            'match': int(course.get('confidence', 85)),
+                            'salary': 'Varies'
+                        })
+            
+            # Limit to top 5
+            top_careers = top_careers[:5]
+            print(f"[ProfileAnalyzer] Final top_careers: {top_careers}")
+        
+        # Calculate clarity score
+        clarity_score = self._calculate_clarity_score(profile_data)
+        
+        # Generate profile summary
+        summary = self._generate_summary(profile_data)
+        
+        # Create or update holistic profile
+        holistic = HolisticProfile.query.filter_by(user_id=user_id).first()
+        
+        # Include top_careers in profile_data
+        complete_profile_data = {
+            **profile_data,
+            'summary': summary,
+            'top_careers': top_careers,
+            'topCareers': top_careers  # Both formats for compatibility
+        }
+        
+        if holistic:
+            holistic.profile_data = complete_profile_data
+            holistic.clarity_score = clarity_score
+        else:
+            holistic = HolisticProfile(
+                user_id=user_id,
+                profile_data=complete_profile_data,
+                clarity_score=clarity_score
+            )
+            db.session.add(holistic)
+        
+        db.session.commit()
+        return holistic
+    
+    def _calculate_clarity_score(self, profile_data):
+        """Calculate career clarity score (0-100)"""
+        factors = []
+        
+        # Check if assessments are complete
+        required_types = ['riasec', 'aptitude', 'personality', 'values', 'risk']
+        completion = sum(1 for t in required_types if t in profile_data) / len(required_types)
+        factors.append(completion * 30)  # 30% weight
+        
+        # Check score consistency (higher variance = lower clarity)
+        if 'riasec' in profile_data:
+            scores = list(profile_data['riasec'].values())
+            variance = max(scores) - min(scores)
+            consistency = min(variance / 12 * 100, 100)  # Normalize
+            factors.append(consistency * 0.4)  # 40% weight
+        
+        # Check value alignment
+        if 'values' in profile_data:
+            top_values = sorted(profile_data['values'].items(), key=lambda x: x[1], reverse=True)[:2]
+            if len(top_values) >= 2:
+                alignment = (top_values[0][1] - top_values[1][1]) / 5 * 100
+                factors.append(min(alignment, 30))  # 30% weight
+        
+        return min(sum(factors), 100)
+    
+    def _generate_summary(self, profile_data):
+        """Generate text summary of profile"""
+        summary_parts = []
+        
+        # RIASEC summary
+        if 'riasec' in profile_data:
+            dominant = max(profile_data['riasec'], key=profile_data['riasec'].get)
+            riasec_map = {
+                'R': 'practical and hands-on',
+                'I': 'analytical and investigative',
+                'A': 'creative and artistic',
+                'S': 'helpful and people-oriented',
+                'E': 'enterprising and leadership-focused',
+                'C': 'organized and detail-oriented'
+            }
+            summary_parts.append(riasec_map.get(dominant, 'balanced'))
+        
+        # Values summary
+        if 'values' in profile_data:
+            top_value = max(profile_data['values'], key=profile_data['values'].get)
+            summary_parts.append(f"values {top_value}")
+        
+        # Personality summary
+        if 'personality' in profile_data:
+            traits = profile_data['personality']
+            if traits.get('openness', 0) > 70:
+                summary_parts.append("open to new experiences")
+            if traits.get('conscientiousness', 0) > 70:
+                summary_parts.append("highly organized")
+        
+        return ", ".join(summary_parts) if summary_parts else "developing career profile"
+    """Generate holistic career profile from multi-dimensional assessments"""
+    
+    def generate_holistic_profile(self, user_id):
+        """Combine all assessments into holistic profile"""
+        # Get all assessments
+        assessments = Assessment.query.filter_by(user_id=user_id).all()
+        
         if not assessments:
             return None
         
@@ -93,7 +234,7 @@ class ProfileAnalyzer:
         factors = []
         
         # Check if assessments are complete
-        required_types = ['riasec', 'aptitude', 'personality', 'values']
+        required_types = ['riasec', 'aptitude', 'personality', 'values', 'risk']
         completion = sum(1 for t in required_types if t in profile_data) / len(required_types)
         factors.append(completion * 30)  # 30% weight
         
@@ -292,3 +433,4 @@ class CareerAnalyzer:
         elif total >= 50:
             return "Good fit with some areas for development"
         return "Consider exploring other options or building foundational skills"
+

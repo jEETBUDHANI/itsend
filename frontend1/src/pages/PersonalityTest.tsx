@@ -113,6 +113,19 @@ const PERSONALITY_QUESTIONS = [
   }
 ];
 
+const ACTIVE_PERSONALITY_QUESTIONS = [
+  PERSONALITY_QUESTIONS[0],
+  PERSONALITY_QUESTIONS[3],
+  PERSONALITY_QUESTIONS[6],
+  PERSONALITY_QUESTIONS[9],
+  PERSONALITY_QUESTIONS[12],
+  PERSONALITY_QUESTIONS[15],
+  PERSONALITY_QUESTIONS[16],
+  PERSONALITY_QUESTIONS[17],
+  PERSONALITY_QUESTIONS[18],
+  PERSONALITY_QUESTIONS[19],
+];
+
 const LIKERT_OPTIONS = [
   { value: 1, label: "Strongly Disagree" },
   { value: 2, label: "Disagree" },
@@ -134,14 +147,14 @@ export default function PersonalityTest() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const [questions, setQuestions] = useState(PERSONALITY_QUESTIONS);
+  const [questions, setQuestions] = useState(ACTIVE_PERSONALITY_QUESTIONS);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState<any>(null);
 
   useEffect(() => {
-    setQuestions(shuffleArray(PERSONALITY_QUESTIONS));
+    setQuestions(shuffleArray(ACTIVE_PERSONALITY_QUESTIONS));
   }, []);
 
   const handleAnswer = (value: number) => {
@@ -232,7 +245,7 @@ export default function PersonalityTest() {
   };
 
   const handleRetake = () => {
-    setQuestions(shuffleArray(PERSONALITY_QUESTIONS));
+    setQuestions(shuffleArray(ACTIVE_PERSONALITY_QUESTIONS));
     setCurrentQuestion(0);
     setAnswers([]);
     setShowResults(false);

@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Brain, Send, Loader2, User, Bot, ArrowLeft, Sparkles } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
+import { useAuth } from '@/contexts/AuthContext';
+import { hasCompletedAllAssessments } from '@/lib/assessmentUtils';
 
 const API_URL = 'http://localhost:5000/api';
 
@@ -18,6 +20,7 @@ interface Message {
 
 export default function AIMentor() {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [messages, setMessages] = useState<Message[]>([
         {
             role: 'assistant',
@@ -32,11 +35,36 @@ export default function AIMentor() {
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [mentorUnlocked, setMentorUnlocked] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
+
+    useEffect(() => {
+        if (!user) return;
+        setMentorUnlocked(hasCompletedAllAssessments(user.id));
+    }, [user]);
+
+    if (!mentorUnlocked) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white flex items-center justify-center px-4">
+                <div className="max-w-xl w-full p-8 bg-white/5 border border-yellow-500/30 rounded-2xl text-center">
+                    <h1 className="text-3xl font-bold mb-3">AI Mentor is locked</h1>
+                    <p className="text-gray-300 mb-6">
+                        Complete all 5 assessments (RIASEC, Aptitude, Personality, Values, and Risk Tolerance) to unlock personalized mentor guidance.
+                    </p>
+                    <div className="flex items-center justify-center gap-3">
+                        <Button variant="outline" onClick={() => navigate('/dashboard')}>Back to Dashboard</Button>
+                        <Button onClick={() => navigate('/assessments')} className="bg-gradient-to-r from-blue-600 to-purple-600">
+                            Go to Assessments
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     const handleSend = async (messageText?: string) => {
         const textToSend = messageText || input.trim();

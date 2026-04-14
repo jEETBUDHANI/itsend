@@ -1,0 +1,47 @@
+@keyframes borderGlow {
+  0% {
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5), 0 0 20px rgba(96, 165, 250, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.8), 0 0 30px rgba(96, 165, 250, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5), 0 0 20px rgba(96, 165, 250, 0.3);
+  }
+}
+
+@keyframes borderGlowPurple {
+  0% {
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.5), 0 0 20px rgba(192, 132, 252, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.8), 0 0 30px rgba(192, 132, 252, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.5), 0 0 20px rgba(192, 132, 252, 0.3);
+  }
+}
+
+@keyframes borderGlowGreen {
+  0% {
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.5), 0 0 20px rgba(74, 222, 128, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.8), 0 0 30px rgba(74, 222, 128, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.5), 0 0 20px rgba(74, 222, 128, 0.3);
+  }
+}
+
+.cardBlueBorder {
+  animation: borderGlow 2s ease-in-out infinite;
+}
+
+.cardPurpleBorder {
+  animation: borderGlowPurple 2s ease-in-out infinite;
+}
+
+.cardGreenBorder {
+  animation: borderGlowGreen 2s ease-in-out infinite;
+}

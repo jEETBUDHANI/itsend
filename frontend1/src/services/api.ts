@@ -27,7 +27,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const requestUrl = error.config?.url ?? '';
+    const isAuthRequest = requestUrl.includes('/auth/login') || requestUrl.includes('/auth/signup');
+
+    if (error.response?.status === 401 && !isAuthRequest) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/login';
@@ -79,7 +82,16 @@ export const userApi = {
     return response.data;
   },
 
-  updateProfile: async (data: { full_name: string }) => {
+  updateProfile: async (data: {
+    full_name?: string;
+    degree?: string;
+    branch?: string;
+    skills?: string[];
+    career_interests?: string[];
+    graduation_year?: number;
+    university?: string;
+    gpa?: number;
+  }) => {
     const response = await api.put('/user/profile', data);
     return response.data;
   },
@@ -151,6 +163,72 @@ export const chatbotApi = {
 
   getSuggestedQuestions: async () => {
     const response = await api.get('/chatbot/suggested-questions');
+    return response.data;
+  },
+};
+
+// Graduate Features API
+export const graduateApi = {
+  // Career Comparison
+  compareCareers: async (data: {
+    selected_careers: string[];
+    user_skills?: string[];
+    preferences?: Record<string, any>;
+  }) => {
+    const response = await api.post('/graduate/compare-careers', data);
+    return response.data;
+  },
+
+  getComparisonResults: async (id: string) => {
+    const response = await api.get(`/graduate/compare-careers/${id}`);
+    return response.data;
+  },
+
+  // Job Readiness
+  calculateJobReadiness: async (data: {
+    career_id: string;
+    skills?: string[];
+    experience?: number;
+    certifications?: string[];
+  }) => {
+    const response = await api.post('/graduate/job-readiness', data);
+    return response.data;
+  },
+
+  getJobReadinessScore: async (id: string) => {
+    const response = await api.get(`/graduate/job-readiness/${id}`);
+    return response.data;
+  },
+
+  // Action Plans
+  generateActionPlan: async (data: {
+    career_id: string;
+    timeline_months?: number;
+    current_level?: string;
+    goals?: string[];
+  }) => {
+    const response = await api.post('/graduate/action-plans', data);
+    return response.data;
+  },
+
+  getActionPlan: async (id: string) => {
+    const response = await api.get(`/graduate/action-plans/${id}`);
+    return response.data;
+  },
+
+  // Career Switching
+  simulateCareerSwitch: async (data: {
+    from_career: string;
+    to_career: string;
+    current_skills?: string[];
+  }) => {
+    const response = await api.post('/graduate/career-switch', data);
+    return response.data;
+  },
+
+  // Career Paths
+  getCareerPaths: async () => {
+    const response = await api.get('/graduate/career-paths');
     return response.data;
   },
 };

@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Brain, CheckCircle2, Circle, ArrowLeft, Trophy, Target, Clock, Sparkles } from 'lucide-react';
 import ChatbotWidget from '@/components/ChatbotWidget';
 import { useAuth } from '@/contexts/AuthContext';
+import { BackgroundBeams } from '@/components/ui/background-beams';
 
 const assessments = [
     {
@@ -76,11 +77,9 @@ export default function AssessmentCenter() {
 
     return (
         <div className="min-h-screen bg-black text-white relative overflow-hidden">
-            {/* Animated Background */}
+            {/* Animated Background with Beams */}
             <div className="fixed inset-0 z-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-pink-900/20"></div>
-                <div className="absolute top-1/3 left-1/3 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-1/3 right-1/3 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+                <BackgroundBeams className="opacity-50" />
             </div>
 
             <ChatbotWidget />
@@ -220,7 +219,7 @@ export default function AssessmentCenter() {
                         <p className="text-xl mb-8 text-blue-100 max-w-2xl mx-auto">
                             {completionRate === 100
                                 ? 'View your comprehensive career profile with personalized insights'
-                                : `Complete ${assessments.length - completedAssessments.length} more assessment${assessments.length - completedAssessments.length !== 1 ? 's' : ''} to unlock your holistic profile`
+                                : `Each assessment now has 10 questions. Complete all 5 assessments to unlock Careers and Roadmap based on your full profile.`
                             }
                         </p>
                         {completionRate !== 100 && (

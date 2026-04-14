@@ -4,17 +4,26 @@ import { Brain, TrendingUp, Calendar, Award, Zap, Target, ArrowLeft } from 'luci
 import { ProgressTimeline } from '@/components/ProgressTimeline';
 import { ReadinessTrendChart } from '@/components/ReadinessTrendChart';
 import { Link } from 'react-router-dom';
+import { BackgroundBeams } from '@/components/ui/background-beams';
 import axios from 'axios';
+import { useAuth } from '@/contexts/AuthContext';
+import { hasCompletedAllAssessments } from '@/lib/assessmentUtils';
 
 const ProgressDashboard = () => {
+    const { user } = useAuth();
     const [progressData, setProgressData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [assessmentDone, setAssessmentDone] = useState(false);
 
     useEffect(() => {
         const fetchProgress = async () => {
             try {
                 setLoading(true);
                 const token = localStorage.getItem('token');
+
+                if (user) {
+                    setAssessmentDone(hasCompletedAllAssessments(user.id));
+                }
 
                 if (!token) {
                     console.log('No token found');
@@ -45,16 +54,14 @@ const ProgressDashboard = () => {
         { label: 'Total Assessments', value: progressData.length, icon: Target, gradient: 'from-blue-500 to-cyan-500' },
         { label: 'Avg Readiness', value: progressData.length > 0 ? Math.round(progressData.reduce((acc, p) => acc + (p.readiness_score || 0), 0) / progressData.length) + '%' : '0%', icon: Zap, gradient: 'from-purple-500 to-pink-500' },
         { label: 'Growth Rate', value: '+12%', icon: TrendingUp, gradient: 'from-green-500 to-emerald-500' },
-        { label: 'Achievements', value: '5', icon: Award, gradient: 'from-orange-500 to-red-500' }
+        { label: 'Achievements', value: progressData.filter((p) => p.readiness_score >= 80).length || 0, icon: Award, gradient: 'from-orange-500 to-red-500' }
     ];
 
     return (
         <div className="min-h-screen bg-black text-white relative overflow-hidden">
-            {/* Animated Background */}
+            {/* Animated Background with Beams */}
             <div className="fixed inset-0 z-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-pink-900/20"></div>
-                <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+                <BackgroundBeams className="opacity-50" />
             </div>
 
             {/* Header */}
@@ -100,7 +107,7 @@ const ProgressDashboard = () => {
                             <div className="absolute inset-0 w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
                         </div>
                     </div>
-                ) : progressData.length === 0 ? (
+                ) : (!assessmentDone && progressData.length === 0) ? (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -111,18 +118,42 @@ const ProgressDashboard = () => {
                         </div>
                         <h3 className="text-3xl font-bold mb-4">No Progress Data Yet</h3>
                         <p className="text-gray-300 mb-8 text-lg">
-                            Complete assessments to start tracking your progress
+                            Your progress starts at 0%. Complete one assessment first to unlock careers, roadmap, and progress tracking.
                         </p>
                         <Link
                             to="/assessments"
                             className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-lg font-semibold transition-all transform hover:scale-105"
                         >
                             <Target className="h-5 w-5" />
-                            Take Assessments
+                            Go to Assessments
                         </Link>
                     </motion.div>
                 ) : (
                     <>
+                        {/* In Progress Suggestions */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="p-6 mb-8 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-xl"
+                        >
+                            <h2 className="text-2xl font-bold mb-4">In Progress</h2>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                    <p className="font-semibold text-lg mb-1">Personalized Path</p>
+                                    <p className="text-sm text-blue-300 mb-2">Next step: Open your recommended roadmap and start step 1</p>
+                                    <p className="text-sm text-gray-300">Recommended action: complete one milestone and return here to track progress</p>
+                                    <p className="text-xs text-green-300 mt-2">Progress: {progressData.length > 0 ? 'In Progress' : '0%'}</p>
+                                </div>
+                                <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                                    <p className="font-semibold text-lg mb-1">General Path</p>
+                                    <p className="text-sm text-blue-300 mb-2">Next step: Compare two other careers and save one roadmap to follow</p>
+                                    <p className="text-sm text-gray-300">Recommended action: explore other careers to validate your choice</p>
+                                    <p className="text-xs text-green-300 mt-2">Progress: Active exploration</p>
+                                </div>
+                            </div>
+                        </motion.div>
+
                         {/* Stats Grid */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
                             {stats.map((stat, index) => (

@@ -7,13 +7,13 @@ class MLPredictor:
     def __init__(self):
         # Get the directory of this file
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        models_dir = os.path.join(base_dir, 'models')
+        self.models_dir = os.path.join(base_dir, 'models')
         
-        # Load models
-        self.rf_model = joblib.load(os.path.join(models_dir, 'rf_model.pkl'))
-        self.selector = joblib.load(os.path.join(models_dir, 'selector.pkl'))
-        self.label_encoder = joblib.load(os.path.join(models_dir, 'label_encoder.pkl'))
-        self.feature_columns = joblib.load(os.path.join(models_dir, 'feature_columns.pkl'))
+        # Lazy load models - don't load until needed
+        self._rf_model = None
+        self._selector = None
+        self._label_encoder = None
+        self._feature_columns = None
         
         # Personality to career mapping
         self.personality_careers = {
@@ -24,6 +24,46 @@ class MLPredictor:
             "E": ["Entrepreneur", "Manager", "Salesperson", "Lawyer", "Business"],
             "C": ["Accountant", "Analyst", "Banker", "Administrator", "Clerk"]
         }
+    
+    @property
+    def rf_model(self):
+        if self._rf_model is None:
+            try:
+                self._rf_model = joblib.load(os.path.join(self.models_dir, 'rf_model.pkl'))
+            except Exception as e:
+                print(f"Warning: Could not load RF model: {e}")
+                return None
+        return self._rf_model
+    
+    @property
+    def selector(self):
+        if self._selector is None:
+            try:
+                self._selector = joblib.load(os.path.join(self.models_dir, 'selector.pkl'))
+            except Exception as e:
+                print(f"Warning: Could not load selector: {e}")
+                return None
+        return self._selector
+    
+    @property
+    def label_encoder(self):
+        if self._label_encoder is None:
+            try:
+                self._label_encoder = joblib.load(os.path.join(self.models_dir, 'label_encoder.pkl'))
+            except Exception as e:
+                print(f"Warning: Could not load label encoder: {e}")
+                return None
+        return self._label_encoder
+    
+    @property
+    def feature_columns(self):
+        if self._feature_columns is None:
+            try:
+                self._feature_columns = joblib.load(os.path.join(self.models_dir, 'feature_columns.pkl'))
+            except Exception as e:
+                print(f"Warning: Could not load feature columns: {e}")
+                return None
+        return self._feature_columns
     
     def predict_courses(self, personality_type):
         """

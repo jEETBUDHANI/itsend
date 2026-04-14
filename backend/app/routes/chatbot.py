@@ -1,20 +1,19 @@
 """
 AI Chatbot API for context-aware career guidance
-Uses Google Gemini API for conversational AI
+Uses Google Gemini REST API for conversational AI
 """
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import User, Assessment
 from app.models_extended import Roadmap
-import google.generativeai as genai
+import requests
 import os
 
 chatbot_bp = Blueprint('chatbot', __name__)
 
-# Configure Gemini API
+# Gemini REST API settings
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
+GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
 
 def get_user_context(user_id):
@@ -84,19 +83,29 @@ Guidelines:
 
 Now answer the student's question:"""
         
-        # Use Gemini API
+        # Use Gemini REST API
         try:
-            model = genai.GenerativeModel('gemini-pro')
-            response = model.generate_content(f"{system_prompt}\n\nQuestion: {question}")
-            answer = response.text
-            
+            payload = {
+                "contents": [{
+                    "parts": [{"text": f"{system_prompt}\n\nQuestion: {question}"}]
+                }]
+            }
+            resp = requests.post(
+                f"{GEMINI_API_URL}?key={GEMINI_API_KEY}",
+                json=payload,
+                timeout=30
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            answer = data["candidates"][0]["content"]["parts"][0]["text"]
+
             return jsonify({
                 'success': True,
                 'question': question,
                 'answer': answer,
                 'timestamp': 'now'
             }), 200
-        
+
         except Exception as api_error:
             return jsonify({
                 'error': 'Failed to get response from AI',

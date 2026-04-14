@@ -13,30 +13,26 @@ def migrate_database():
         try:
             # Try to add new columns using raw SQL
             with db.engine.connect() as conn:
-                # Check if columns exist, if not add them
-                try:
-                    conn.execute(db.text("ALTER TABLE users ADD COLUMN academic_stage VARCHAR(50)"))
-                    print("✓ Added academic_stage column")
-                except Exception:
-                    print("- academic_stage column already exists")
-                
-                try:
-                    conn.execute(db.text("ALTER TABLE users ADD COLUMN current_stream VARCHAR(50)"))
-                    print("✓ Added current_stream column")
-                except Exception:
-                    print("- current_stream column already exists")
-                
-                try:
-                    conn.execute(db.text("ALTER TABLE users ADD COLUMN target_exams JSON"))
-                    print("✓ Added target_exams column")
-                except Exception:
-                    print("- target_exams column already exists")
-                
-                try:
-                    conn.execute(db.text("ALTER TABLE users ADD COLUMN class_grade VARCHAR(20)"))
-                    print("✓ Added class_grade column")
-                except Exception:
-                    print("- class_grade column already exists")
+                columns_to_add = [
+                    ("user_role", "VARCHAR(50) DEFAULT 'graduate_student'"),
+                    ("degree", "VARCHAR(100)"),
+                    ("specialization", "VARCHAR(100)"),
+                    ("graduation_year", "INTEGER"),
+                    ("current_year", "VARCHAR(50)"),
+                    ("current_skills", "JSON"),
+                    ("career_interests", "JSON"),
+                    ("academic_stage", "VARCHAR(50)"),
+                    ("current_stream", "VARCHAR(50)"),
+                    ("target_exams", "JSON"),
+                    ("class_grade", "VARCHAR(20)")
+                ]
+
+                for col_name, col_type in columns_to_add:
+                    try:
+                        conn.execute(db.text(f"ALTER TABLE users ADD COLUMN {col_name} {col_type}"))
+                        print(f"✓ Added {col_name} column")
+                    except Exception:
+                        print(f"- {col_name} column already exists")
                 
                 conn.commit()
             

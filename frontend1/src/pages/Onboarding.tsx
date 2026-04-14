@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Boxes } from '@/components/ui/background-boxes';
 import { useAuth } from '@/contexts/AuthContext';
+import { roadmapsApi } from '@/services/api';
+import styles from './Onboarding.module.css';
 import {
     GraduationCap,
     Briefcase,
@@ -39,8 +42,56 @@ const Onboarding = () => {
     const totalSteps = 4;
 
     const handleComplete = async () => {
-        // TODO: Save onboarding data to backend
-        console.log('Onboarding data:', data);
+        const storageKey = user ? `onboarding_${user.id}` : 'onboarding';
+        const backendPayload = {
+            academic_stage:
+                data.academicStage === '10th_pass'
+                    ? '9-10'
+                    : data.academicStage === '12th_pass'
+                        ? '11-12'
+                        : data.academicStage === 'college'
+                            ? 'college'
+                            : undefined,
+            current_stream:
+                data.stream === 'science_pcm' || data.stream === 'science_pcb'
+                    ? 'Science'
+                    : data.stream === 'commerce'
+                        ? 'Commerce'
+                        : data.stream === 'arts'
+                            ? 'Arts'
+                            : undefined,
+            target_exams:
+                data.stream === 'science_pcm'
+                    ? ['JEE Main', 'JEE Advanced']
+                    : data.stream === 'science_pcb'
+                        ? ['NEET UG']
+                        : data.stream === 'commerce'
+                            ? ['CA Foundation', 'CUET']
+                            : data.stream === 'arts'
+                                ? ['CUET', 'CLAT']
+                                : []
+        };
+
+        try {
+            if (user) {
+                await roadmapsApi.updateStage(backendPayload);
+            }
+
+            localStorage.setItem(storageKey, JSON.stringify({
+                ...data,
+                backendPayload,
+                completedAt: new Date().toISOString()
+            }));
+        } catch (error) {
+            console.error('Failed to save onboarding data:', error);
+            localStorage.setItem(storageKey, JSON.stringify({
+                ...data,
+                backendPayload,
+                saveError: true,
+                completedAt: new Date().toISOString()
+            }));
+        }
+
         navigate('/dashboard');
     };
 
@@ -54,9 +105,17 @@ const Onboarding = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+        <div className="min-h-screen bg-black text-white relative overflow-hidden">
+            {/* Animated Background */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-[#12051f] to-black" />
+                <Boxes className="opacity-[0.18]" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.16),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(217,70,239,0.12),transparent_35%)]" />
+                <div className="absolute inset-0 bg-black/35 [mask-image:radial-gradient(circle_at_center,transparent_18%,black_88%)]" />
+            </div>
+
             {/* Progress Bar */}
-            <div className="fixed top-0 left-0 right-0 h-1 bg-gray-800 z-50">
+            <div className="fixed top-0 left-0 right-0 h-1 bg-white/10 z-50">
                 <motion.div
                     className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
                     initial={{ width: '0%' }}
@@ -66,7 +125,7 @@ const Onboarding = () => {
             </div>
 
             {/* Header */}
-            <header className="border-b border-gray-800 bg-gray-900/80 backdrop-blur-xl">
+            <header className="relative z-10 border-b border-white/10 bg-black/60 backdrop-blur-xl">
                 <div className="container mx-auto flex h-16 items-center justify-between px-4">
                     <div className="flex items-center gap-2">
                         <Brain className="h-6 w-6 text-blue-400" />
@@ -78,7 +137,7 @@ const Onboarding = () => {
                 </div>
             </header>
 
-            <div className="container mx-auto px-4 py-12">
+            <div className="relative z-10 container mx-auto px-4 py-12">
                 <AnimatePresence mode="wait">
                     {/* Step 1: Role Selection */}
                     {step === 1 && (
@@ -113,18 +172,14 @@ const Onboarding = () => {
                                     onClick={() => { setData({ ...data, role: 'student' }); nextStep(); }}
                                     className="cursor-pointer"
                                 >
-                                    <Card className={`relative p-8 bg-gradient-to-br ${data.role === 'student'
-                                            ? 'from-blue-600 to-blue-800 border-blue-400'
-                                            : 'from-gray-800 to-gray-900 border-gray-700 hover:border-gray-600'
-                                        } border-2 transition-all duration-300 overflow-hidden`}>
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-transparent rounded-full blur-2xl" />
-                                        <div className="relative z-10">
-                                            <GraduationCap className="w-16 h-16 mb-4 text-blue-400" />
-                                            <h3 className="text-2xl font-bold mb-2">I'm a Student</h3>
-                                            <p className="      text-gray-300">
-                                                Looking for career guidance and academic roadmap
-                                            </p>
-                                        </div>
+                                    <Card className={`p-8 bg-slate-950 border-2 border-blue-500 transition-all duration-300 rounded-2xl ${styles.cardBlueBorder}`}>
+                                        <GraduationCap className="w-16 h-16 mb-5 text-blue-400" />
+                                        <h3 className="text-3xl font-black tracking-tight mb-3 text-white">
+                                            I'm a Student
+                                        </h3>
+                                        <p className="text-[1.05rem] leading-8 font-medium max-w-sm text-slate-300">
+                                            Looking for career guidance and academic roadmap
+                                        </p>
                                     </Card>
                                 </motion.div>
 
@@ -134,18 +189,14 @@ const Onboarding = () => {
                                     onClick={() => { setData({ ...data, role: 'professor' }); nextStep(); }}
                                     className="cursor-pointer"
                                 >
-                                    <Card className={`relative p-8 bg-gradient-to-br ${data.role === 'professor'
-                                            ? 'from-purple-600 to-purple-800 border-purple-400'
-                                            : 'from-gray-800 to-gray-900 border-gray-700 hover:border-gray-600'
-                                        } border-2 transition-all duration-300 overflow-hidden`}>
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-400/20 to-transparent rounded-full blur-2xl" />
-                                        <div className="relative z-10">
-                                            <Users className="w-16 h-16 mb-4 text-purple-400" />
-                                            <h3 className="text-2xl font-bold mb-2">I'm a Professor</h3>
-                                            <p className="text-gray-300">
-                                                Managing student guidance for my institution
-                                            </p>
-                                        </div>
+                                    <Card className={`p-8 bg-slate-950 border-2 border-purple-500 transition-all duration-300 rounded-2xl ${styles.cardPurpleBorder}`}>
+                                        <Users className="w-16 h-16 mb-5 text-purple-400" />
+                                        <h3 className="text-3xl font-black tracking-tight mb-3 text-white">
+                                            I'm a Professor
+                                        </h3>
+                                        <p className="text-[1.05rem] leading-8 font-medium max-w-sm text-slate-300">
+                                            Managing student guidance for my institution
+                                        </p>
                                     </Card>
                                 </motion.div>
                             </div>
@@ -186,10 +237,7 @@ const Onboarding = () => {
                                         onClick={() => setData({ ...data, academicStage: stage.value as any })}
                                         className="cursor-pointer"
                                     >
-                                        <Card className={`relative p-8 text-center bg-gradient-to-br ${data.academicStage === stage.value
-                                                ? 'from-blue-600 to-purple-600 border-blue-400'
-                                                : 'from-gray-800 to-gray-900 border-gray-700 hover:border-gray-600'
-                                            } border-2 transition-all duration-300`}>
+                                        <Card className={`p-8 text-center relative bg-slate-950 border-2 border-blue-500 transition-all duration-300 rounded-2xl ${styles.cardBlueBorder}`}>
                                             {data.academicStage === stage.value && (
                                                 <motion.div
                                                     initial={{ scale: 0 }}
@@ -200,8 +248,8 @@ const Onboarding = () => {
                                                 </motion.div>
                                             )}
                                             <div className="text-5xl mb-4">{stage.icon}</div>
-                                            <h3 className="text-xl font-bold mb-2">{stage.title}</h3>
-                                            <p className="text-gray-300">{stage.desc}</p>
+                                            <h3 className="text-2xl font-extrabold tracking-tight mb-2 text-white">{stage.title}</h3>
+                                            <p className="text-base leading-7 font-medium text-slate-300">{stage.desc}</p>
                                         </Card>
                                     </motion.div>
                                 ))}
@@ -211,7 +259,7 @@ const Onboarding = () => {
                                 <Button
                                     variant="outline"
                                     onClick={prevStep}
-                                    className="bg-gray-800 border-gray-700 hover:bg-gray-700"
+                                    className="bg-white/10 border-white/20 hover:bg-white/20 text-white"
                                 >
                                     <ArrowLeft className="mr-2 h-4 w-4" />
                                     Back
@@ -266,10 +314,7 @@ const Onboarding = () => {
                                         onClick={() => setData({ ...data, stream: stream.value as any })}
                                         className="cursor-pointer"
                                     >
-                                        <Card className={`relative p-6 text-center bg-gradient-to-br ${data.stream === stream.value
-                                                ? stream.color + ' border-white/50'
-                                                : 'from-gray-800 to-gray-900 border-gray-700 hover:border-gray-600'
-                                            } border-2 transition-all duration-300`}>
+                                        <Card className={`p-6 text-center relative bg-slate-950 border-2 border-purple-500 transition-all duration-300 rounded-2xl ${styles.cardPurpleBorder}`}>
                                             {data.stream === stream.value && (
                                                 <motion.div
                                                     initial={{ scale: 0 }}
@@ -280,8 +325,8 @@ const Onboarding = () => {
                                                 </motion.div>
                                             )}
                                             <div className="text-4xl mb-3">{stream.icon}</div>
-                                            <h3 className="text-lg font-bold mb-1">{stream.title}</h3>
-                                            <p className="text-sm text-gray-300">{stream.desc}</p>
+                                            <h3 className="text-xl font-extrabold tracking-tight mb-1 text-white">{stream.title}</h3>
+                                            <p className="text-sm leading-6 font-medium text-slate-300">{stream.desc}</p>
                                         </Card>
                                     </motion.div>
                                 ))}
@@ -291,7 +336,7 @@ const Onboarding = () => {
                                 <Button
                                     variant="outline"
                                     onClick={prevStep}
-                                    className="bg-gray-800 border-gray-700 hover:bg-gray-700"
+                                    className="bg-white/10 border-white/20 hover:bg-white/20 text-white"
                                 >
                                     <ArrowLeft className="mr-2 h-4 w-4" />
                                     Back
@@ -356,12 +401,9 @@ const Onboarding = () => {
                                             }}
                                             className="cursor-pointer"
                                         >
-                                            <Card className={`p-4 text-center bg-gradient-to-br ${isSelected
-                                                    ? 'from-green-600 to-blue-600 border-green-400'
-                                                    : 'from-gray-800 to-gray-900 border-gray-700 hover:border-gray-600'
-                                                } border-2 transition-all duration-300`}>
+                                            <Card className={`p-4 text-center bg-slate-950 border-2 border-green-500 transition-all duration-300 rounded-2xl ${styles.cardGreenBorder}`}>
                                                 <div className="text-3xl mb-2">{interest.icon}</div>
-                                                <div className="text-sm font-medium">{interest.label}</div>
+                                                <div className="text-base font-bold tracking-tight text-white">{interest.label}</div>
                                             </Card>
                                         </motion.div>
                                     );
@@ -372,7 +414,7 @@ const Onboarding = () => {
                                 <Button
                                     variant="outline"
                                     onClick={prevStep}
-                                    className="bg-gray-800 border-gray-700 hover:bg-gray-700"
+                                    className="bg-white/10 border-white/20 hover:bg-white/20 text-white"
                                 >
                                     <ArrowLeft className="mr-2 h-4 w-4" />
                                     Back

@@ -2,11 +2,30 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, ArrowRight, CheckCircle2, Brain, LogOut, Sparkles, TrendingUp, Target } from 'lucide-react';
 import ChatbotWidget from '@/components/ChatbotWidget';
+import { BackgroundBeams } from '@/components/ui/background-beams';
+import { ElectricBorder } from '@/components/ui/electric-border';
+import { hasCompletedAllAssessments } from '@/lib/assessmentUtils';
 import axios from 'axios';
+
+const careerColors: { [key: string]: string } = {
+    "Software Engineer": "#3b82f6",
+    "Data Scientist": "#a855f7",
+    "UX Designer": "#ec4899",
+    "Product Manager": "#22c55e",
+    "Investment Banker": "#eab308",
+    "Doctor": "#ef4444",
+    "Scientist": "#06b6d4",
+    "Accountant": "#f97316",
+    "Teacher": "#6366f1",
+    "Analyst": "#10b981",
+    "Banker": "#f59e0b",
+    "Researcher": "#8b5cf6",
+    "Engineer": "#3b82f6"
+};
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -92,7 +111,7 @@ const CAREER_ROADMAPS: any = {
     "Teacher": {
         steps: [
             { title: "Subject Mastery", desc: "Become expert in your subject, understand curriculum deeply.", duration: "Ongoing", icon: "📚" },
-            { title: "Teaching Skills", desc: "Learn pedagogy, classroom management, student psychology.", duration: "6 months", icon: "👨‍🏫" },
+            { title: "Teaching Skills", desc: "Learn pedagogy, classroom management, student psychology.", duration: "6 months", icon: "👨🏫" },
             { title: "B.Ed/Teaching Certification", desc: "Complete B.Ed or teaching certification program.", duration: "1-2 years", icon: "🎓" },
             { title: "Teaching Practice", desc: "Gain experience, develop teaching style, continuous improvement.", duration: "Ongoing", icon: "✏️" }
         ]
@@ -114,12 +133,25 @@ const Roadmap = () => {
     const [selectedCareer, setSelectedCareer] = useState<CareerMatch | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [hasProfile, setHasProfile] = useState(false);
+    const [generalCareers, setGeneralCareers] = useState<CareerMatch[]>([]);
 
     useEffect(() => {
         loadMatchedCareers();
     }, []);
 
     const loadMatchedCareers = async () => {
+        const hasCompletedAll = user ? hasCompletedAllAssessments(user.id) : false;
+        const allNames = Object.keys(CAREER_ROADMAPS);
+        setGeneralCareers(
+            allNames.slice(0, 6).map((name) => ({ name, match: 60, description: 'General roadmap option' }))
+        );
+
+        if (!hasCompletedAll) {
+            setHasProfile(false);
+            setIsLoading(false);
+            return;
+        }
+
         try {
             const token = localStorage.getItem('token');
             const response = await axios.get(`${API_URL}/assessment/holistic`, {
@@ -133,11 +165,30 @@ const Roadmap = () => {
                 console.log('[Roadmap] Profile Data:', profileData);
                 const careers = profileData.top_careers || profileData.topCareers || [];
                 console.log('[Roadmap] Matched Careers:', careers);
-                setMatchedCareers(careers);
-                setHasProfile(true);
-                if (careers.length > 0) {
-                    setSelectedCareer(careers[0]);
+
+                // Flexible parsing
+                let parsedCareers = careers;
+                if (typeof careers === 'string') {
+                    try { parsedCareers = JSON.parse(careers); } catch (e) { parsedCareers = []; }
                 }
+
+                setMatchedCareers(parsedCareers);
+                const selectedNames = new Set(parsedCareers.map((c: CareerMatch) => c.name));
+                setGeneralCareers(
+                    allNames
+                        .filter((name) => !selectedNames.has(name))
+                        .slice(0, 6)
+                        .map((name) => ({ name, match: 60, description: 'General roadmap option' }))
+                );
+
+                if (parsedCareers.length > 0) {
+                    setHasProfile(true);
+                    setSelectedCareer(parsedCareers[0]);
+                } else {
+                    setHasProfile(false);
+                }
+            } else {
+                setHasProfile(false);
             }
         } catch (error) {
             console.error('[Roadmap] Failed to load matched careers:', error);
@@ -160,7 +211,7 @@ const Roadmap = () => {
         );
     }
 
-    if (!hasProfile || matchedCareers.length === 0) {
+    if (!user || !hasCompletedAllAssessments(user.id)) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
                 <ChatbotWidget />
@@ -184,9 +235,9 @@ const Roadmap = () => {
                         animate={{ opacity: 1, y: 0 }}
                     >
                         <div className="text-8xl mb-8">🎯</div>
-                        <h1 className="text-4xl font-bold mb-4">Complete Your Assessments First</h1>
+                        <h1 className="text-4xl font-bold mb-4">Complete All 5 Assessments First</h1>
                         <p className="text-xl text-gray-400 mb-8">
-                            To see your personalized career roadmap, you need to complete your assessments and view your Holistic Profile.
+                            Finish all 5 assessments first. Then Roadmap will open and show the career path recommended from your full assessment profile.
                         </p>
                         <div className="flex gap-4 justify-center">
                             <Button size="lg" onClick={() => navigate('/assessments')} className="bg-gradient-to-r from-blue-600 to-purple-600">
@@ -246,12 +297,20 @@ const Roadmap = () => {
                     transition={{ delay: 0.1 }}
                     className="mb-12"
                 >
+                    {matchedCareers.length > 0 ? (
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                         <Target className="w-5 h-5 text-blue-400" />
-                        Select Your Career Path
+                        Section A: Personalized Roadmap (Based on Your Assessment)
                     </h3>
+                    ) : (
+                    <div className="mb-6 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-100">
+                        Personalized roadmap will appear here as soon as your assessment data is available. You can still explore general roadmaps below.
+                    </div>
+                    )}
                     <div className="grid md:grid-cols-3 gap-4">
-                        {matchedCareers.map((career, index) => (
+                        {matchedCareers.map((career, index) => {
+                            const careerColor = careerColors[career.name] || "#3b82f6";
+                            return (
                             <motion.div
                                 key={index}
                                 initial={{ opacity: 0, scale: 0.9 }}
@@ -259,18 +318,55 @@ const Roadmap = () => {
                                 transition={{ delay: 0.2 + index * 0.1 }}
                                 whileHover={{ scale: 1.05 }}
                                 onClick={() => setSelectedCareer(career)}
-                                className={`p-6 rounded-xl cursor-pointer transition-all ${selectedCareer?.name === career.name
-                                    ? 'bg-gradient-to-br from-blue-600 to-purple-600 ring-2 ring-blue-400'
-                                    : 'bg-white/5 hover:bg-white/10 border border-white/10'
-                                    }`}
+                                className="h-full"
                             >
-                                <h4 className="font-bold text-lg mb-2">{career.name}</h4>
-                                <div className="flex items-center gap-2 text-sm">
-                                    <Sparkles className="w-4 h-4 text-yellow-400" />
-                                    <span className="text-green-400 font-semibold">{career.match}% Match</span>
-                                </div>
+                                <ElectricBorder color={careerColor} variant="swirl" className="h-full">
+                                    <div className={`p-6 rounded-lg cursor-pointer transition-all h-full flex flex-col justify-center ${selectedCareer?.name === career.name
+                                        ? 'bg-gradient-to-br from-blue-600 to-purple-600 ring-2 ring-blue-400'
+                                        : 'bg-white/5 hover:bg-white/10'
+                                        }`}
+                                    >
+                                        <h4 className="font-bold text-lg mb-2">{career.name}</h4>
+                                        <div className="flex items-center gap-2 text-sm">
+                                            <Sparkles className="w-4 h-4 text-yellow-400" />
+                                            <span className="text-green-400 font-semibold">{career.match}% Match</span>
+                                        </div>
+                                    </div>
+                                </ElectricBorder>
                             </motion.div>
-                        ))}
+                            );
+                        })}
+                    </div>
+
+                    <h3 className="text-lg font-semibold mt-8 mb-4 flex items-center gap-2">
+                        <Target className="w-5 h-5 text-purple-400" />
+                        Section B: Other Roadmaps (General)
+                    </h3>
+                    <div className="grid md:grid-cols-3 gap-4">
+                        {generalCareers.map((career, index) => {
+                            const careerColor = careerColors[career.name] || "#8b5cf6";
+                            return (
+                                <motion.div
+                                    key={`general-${index}`}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    transition={{ delay: 0.35 + index * 0.05 }}
+                                    whileHover={{ scale: 1.03 }}
+                                    onClick={() => setSelectedCareer(career)}
+                                    className="h-full"
+                                >
+                                    <ElectricBorder color={careerColor} variant="swirl" className="h-full">
+                                        <div className="p-6 rounded-lg cursor-pointer transition-all h-full flex flex-col justify-center bg-white/5 hover:bg-white/10">
+                                            <h4 className="font-bold text-lg mb-2">{career.name}</h4>
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <Sparkles className="w-4 h-4 text-yellow-400" />
+                                                <span className="text-gray-300">General Path</span>
+                                            </div>
+                                        </div>
+                                    </ElectricBorder>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 </motion.div>
 

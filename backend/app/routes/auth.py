@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from sqlalchemy import func
 from app import db
 from app.models import User
 
@@ -10,24 +11,34 @@ def signup():
     """Register a new user"""
     try:
         data = request.get_json()
+        email = (data.get('email') or '').strip().lower() if data else ''
+        password = data.get('password') if data else None
+        full_name = (data.get('full_name') or '').strip() if data else ''
+        
+        print(f"[SIGNUP] Received request - Email: {email}, Password length: {len(password) if password else 0}, Name: {full_name}")
         
         # Validate input
-        if not data or not data.get('email') or not data.get('password'):
+        if not email or not password:
+            print(f"[SIGNUP] Missing required fields")
             return jsonify({'error': 'Email and password are required'}), 400
         
         # Check if user already exists
-        if User.query.filter_by(email=data['email']).first():
+        existing = User.query.filter(func.lower(User.email) == email).first()
+        if existing:
+            print(f"[SIGNUP] User with email '{email}' already exists")
             return jsonify({'error': 'Email already registered'}), 400
         
         # Create new user
         user = User(
-            email=data['email'],
-            full_name=data.get('full_name', '')
+            email=email,
+            full_name=full_name
         )
-        user.set_password(data['password'])
+        user.set_password(password)
+        print(f"[SIGNUP] Created user object - Email: {user.email}, Hash length: {len(user.password_hash)}")
         
         db.session.add(user)
         db.session.commit()
+        print(f"[SIGNUP] User saved to database - ID: {user.id}")
         
         # Create access token
         access_token = create_access_token(identity=str(user.id))
@@ -48,15 +59,34 @@ def login():
     """Login user"""
     try:
         data = request.get_json()
+        email = (data.get('email') or '').strip().lower() if data else ''
+        password = data.get('password') if data else None
+        
+        print(f"[LOGIN] Received request - Email: {email}, Password length: {len(password) if password else 0}")
         
         # Validate input
-        if not data or not data.get('email') or not data.get('password'):
+        if not email or not password:
+            print(f"[LOGIN] Missing credentials - Email: {bool(email)}, Password: {bool(password)}")
             return jsonify({'error': 'Email and password are required'}), 400
         
         # Find user
-        user = User.query.filter_by(email=data['email']).first()
+        user = User.query.filter(func.lower(User.email) == email).first()
+        print(f"[LOGIN] User found: {user is not None}")
         
-        if not user or not user.check_password(data['password']):
+        if not user:
+            print(f"[LOGIN] User with email '{email}' not found in database")
+            # List all users for debugging
+            all_users = User.query.all()
+            print(f"[LOGIN] Total users in database: {len(all_users)}")
+            for u in all_users:
+                print(f"[LOGIN]   - {u.email}")
+            return jsonify({'error': 'Invalid email or password'}), 401
+        
+        # Check password
+        pwd_check = user.check_password(password)
+        print(f"[LOGIN] Password check result: {pwd_check}")
+        
+        if not pwd_check:
             return jsonify({'error': 'Invalid email or password'}), 401
         
         # Create access token

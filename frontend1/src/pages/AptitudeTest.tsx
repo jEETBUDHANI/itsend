@@ -103,6 +103,8 @@ const APTITUDE_QUESTIONS = [
     }
 ];
 
+const ACTIVE_APTITUDE_QUESTIONS = APTITUDE_QUESTIONS.slice(0, 10);
+
 // Shuffle function
 const shuffleArray = <T,>(array: T[]): T[] => {
     const shuffled = [...array];
@@ -116,7 +118,7 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 export default function AptitudeTest() {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const [questions, setQuestions] = useState(APTITUDE_QUESTIONS);
+    const [questions, setQuestions] = useState(ACTIVE_APTITUDE_QUESTIONS);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [answers, setAnswers] = useState<number[]>([]);
     const [showResults, setShowResults] = useState(false);
@@ -124,7 +126,7 @@ export default function AptitudeTest() {
 
     // Shuffle questions on mount
     useEffect(() => {
-        setQuestions(shuffleArray(APTITUDE_QUESTIONS));
+        setQuestions(shuffleArray(ACTIVE_APTITUDE_QUESTIONS));
     }, []);
 
     const handleAnswer = (answerIndex: number) => {
@@ -197,7 +199,7 @@ export default function AptitudeTest() {
     };
 
     const handleRetake = () => {
-        setQuestions(shuffleArray(APTITUDE_QUESTIONS)); // Shuffle again
+        setQuestions(shuffleArray(ACTIVE_APTITUDE_QUESTIONS)); // Shuffle again
         setCurrentQuestion(0);
         setAnswers([]);
         setShowResults(false);

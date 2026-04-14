@@ -2,6 +2,12 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { ArrowRight, Brain, Target, Sparkles, Users, CheckCircle, TrendingUp, Zap, Award, Rocket, BarChart3 } from 'lucide-react';
+import { ShaderBackground } from '@/components/ui/animated-shader-hero';
+import { FeatureCarousel } from '@/components/ui/feature-carousel';
+import { GradientBackground } from '@/components/ui/gradient-background';
+import { BackgroundPaths } from '@/components/ui/background-paths';
+import { ImageAutoSlider } from '@/components/ui/image-auto-slider';
+import { GlowCard } from '@/components/ui/spotlight-card';
 
 const Landing = () => {
   const careerPaths = [
@@ -85,217 +91,209 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-pink-900/20"></div>
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-      </div>
-
-      {/* Navigation */}
-      <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="sticky top-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-xl"
-      >
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
-              <Brain className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              CareerPath Pro
-            </span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link to="/login">
-                <Button variant="ghost" className="text-gray-300 hover:text-white hover:bg-white/10">Login</Button>
-              </Link>
-            </motion.div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link to="/signup">
-                <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white">
-                  Get Started <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </motion.div>
-          </div>
+      {/* Hero Section - Full Screen */}
+      <section className="min-h-screen relative flex items-center justify-center overflow-hidden">
+        {/* Animated Shader Background */}
+        <div className="absolute inset-0 z-0">
+          <ShaderBackground />
         </div>
-      </motion.nav>
+        
+        {/* Hero Content */}
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 text-center">
+          {/* Trust Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="mb-8"
+          >
+            <div className="inline-flex items-center gap-2 px-6 py-3 bg-orange-500/10 backdrop-blur-md border border-orange-300/30 rounded-full text-sm">
+              <Sparkles className="w-4 h-4 text-yellow-300" />
+              <span className="text-orange-100">Trusted by forward-thinking students.</span>
+            </div>
+          </motion.div>
 
-      <div className="relative z-10">
-        {/* Hero Section */}
-        <section className="py-20 lg:py-32">
-          <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              {/* Left Content */}
-              <div className="space-y-8">
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6 }}
-                  className="inline-block"
-                >
-                  <div className="flex items-center gap-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full px-4 py-2 border border-blue-500/30">
-                    <Sparkles className="w-4 h-4 text-blue-400" />
-                    <span className="text-sm font-medium text-blue-300">AI-Powered Career Guidance</span>
-                  </div>
-                </motion.div>
+          {/* Main Heading */}
+          <div className="space-y-4 mb-8">
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-6xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-r from-orange-300 via-yellow-400 to-amber-300 bg-clip-text text-transparent leading-tight"
+            >
+              Discover Your
+            </motion.h1>
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-6xl md:text-7xl lg:text-8xl font-bold bg-gradient-to-r from-yellow-300 via-orange-400 to-red-400 bg-clip-text text-transparent leading-tight"
+            >
+              Perfect Career Path
+            </motion.h1>
+          </div>
 
-                <motion.h1
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                  className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight"
-                >
-                  Discover Your{' '}
-                  <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                    Perfect Career
-                  </span>{' '}
-                  Path
-                </motion.h1>
+          {/* Subtitle */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="max-w-3xl mx-auto mb-12"
+          >
+            <p className="text-lg md:text-xl lg:text-2xl text-orange-100/90 font-light leading-relaxed">
+              India's most comprehensive career guidance platform — Get personalized roadmaps, AI-powered insights, and real job market data to make informed decisions about your future.
+            </p>
+          </motion.div>
 
-                <motion.p
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="text-xl text-gray-300 leading-relaxed"
-                >
-                  India's most comprehensive career guidance platform. Get personalized roadmaps, AI-powered insights, and real job market data to make informed decisions about your future.
-                </motion.p>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                  className="flex flex-col sm:flex-row gap-4"
-                >
-                  <Link to="/signup">
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button size="lg" className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-lg h-14 px-8">
-                        Start Your Journey
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </Button>
-                    </motion.div>
-                  </Link>
-                  <Link to="/login">
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button size="lg" variant="outline" className="text-lg h-14 px-8 border-2 border-white/20 text-white hover:bg-white/10 hover:text-white">
-                        <Zap className="mr-2 h-5 w-5" />
-                        Explore Features
-                      </Button>
-                    </motion.div>
-                  </Link>
-                </motion.div>
-
-                {/* Stats */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.4 }}
-                  className="grid grid-cols-4 gap-4 pt-8"
-                >
-                  {stats.map((stat, index) => (
-                    <motion.div
-                      key={index}
-                      whileHover={{ scale: 1.1, y: -5 }}
-                      className="text-center p-4 bg-white/5 rounded-xl border border-white/10 backdrop-blur-xl"
-                    >
-                      <div className="flex justify-center mb-2 text-blue-400">{stat.icon}</div>
-                      <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                        {stat.value}
-                      </div>
-                      <div className="text-xs text-gray-300">{stat.label}</div>
-                    </motion.div>
-                  ))}
-                </motion.div>
-              </div>
-
-              {/* Right - Hero Image */}
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-                className="relative"
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
+            <Link to="/signup">
+              <Button
+                size="lg"
+                className="px-8 py-6 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-black rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-orange-500/25"
               >
-                <div className="relative rounded-3xl overflow-hidden shadow-2xl border-2 border-white/10">
-                  <img
-                    src="/hero_career_guidance_1769578434140.png"
-                    alt="Students planning their career"
-                    className="w-full h-auto"
-                  />
-                  {/* Floating Badge */}
-                  <motion.div
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                    className="absolute top-8 right-8 bg-white/10 backdrop-blur-xl rounded-2xl shadow-xl p-4 border border-white/20"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full flex items-center justify-center">
-                        <CheckCircle className="w-6 h-6 text-white" />
-                      </div>
-                      <div>
-                        <div className="text-sm font-semibold text-white">Success Rate</div>
-                        <div className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">98%</div>
-                      </div>
-                    </div>
-                  </motion.div>
-                </div>
+                Get Started for Free
+              </Button>
+            </Link>
+            <Link to="/login">
+              <Button
+                size="lg"
+                variant="outline"
+                className="px-8 py-6 bg-orange-500/10 hover:bg-orange-500/20 border-2 border-orange-300/30 hover:border-orange-300/50 text-orange-100 rounded-full font-semibold text-lg transition-all duration-300 hover:scale-105 backdrop-blur-sm"
+              >
+                Explore Features
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1.2 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="w-6 h-10 border-2 border-orange-300/50 rounded-full flex items-start justify-center p-2"
+          >
+            <motion.div className="w-1 h-2 bg-orange-300/80 rounded-full" />
+          </motion.div>
+        </motion.div>
+      </section>
+
+      {/* Content Sections */}
+      <div className="relative z-10">
+        {/* Features Carousel */}
+        <section>
+          <GradientBackground
+            className="min-h-[760px]"
+            overlay
+            overlayOpacity={0.5}
+            animationDuration={10}
+          >
+            <div className="container mx-auto px-4 py-16 w-full">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="text-center mb-16"
+              >
+                <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                  Everything You Need to{' '}
+                  <span className="bg-gradient-to-r from-blue-300 to-cyan-200 bg-clip-text text-transparent">
+                    Succeed
+                  </span>
+                </h2>
+                <p className="text-xl text-gray-100 max-w-2xl mx-auto">
+                  Comprehensive tools and insights designed for Indian students
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                <FeatureCarousel features={features} />
               </motion.div>
             </div>
-          </div>
+          </GradientBackground>
         </section>
 
-        {/* Features Grid */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-16"
-            >
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                Everything You Need to{' '}
-                <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  Succeed
-                </span>
-              </h2>
-              <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-                Comprehensive tools and insights designed for Indian students
-              </p>
-            </motion.div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ y: -10, scale: 1.02 }}
-                  className="group"
-                >
-                  <div className="relative p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 h-full">
-                    <div className={`w-14 h-14 bg-gradient-to-r ${feature.gradient} rounded-xl flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                      {feature.icon}
-                    </div>
-                    <h3 className="text-xl font-bold mb-2 text-white">{feature.title}</h3>
-                    <p className="text-gray-300">{feature.description}</p>
-                  </div>
-                </motion.div>
-              ))}
+        {/* Career Paths Section with Background Paths */}
+        <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-950 py-20">
+          {/* Background Paths Animation */}
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 pointer-events-none">
+              <svg
+                className="w-full h-full text-slate-950 dark:text-white"
+                viewBox="0 0 696 316"
+                fill="none"
+              >
+                <title>Background Paths</title>
+                {Array.from({ length: 36 }, (_, i) => ({
+                  id: i,
+                  d: `M-${380 - i * 5} -${189 + i * 6}C-${380 - i * 5} -${189 + i * 6} -${312 - i * 5} ${216 - i * 6} ${152 - i * 5} ${343 - i * 6}C${616 - i * 5} ${470 - i * 6} ${684 - i * 5} ${875 - i * 6} ${684 - i * 5} ${875 - i * 6}`,
+                  width: 0.5 + i * 0.03,
+                })).map((path) => (
+                  <motion.path
+                    key={path.id}
+                    d={path.d}
+                    stroke="currentColor"
+                    strokeWidth={path.width}
+                    strokeOpacity={0.1 + path.id * 0.03}
+                    initial={{ pathLength: 0.3, opacity: 0.6 }}
+                    animate={{
+                      pathLength: 1,
+                      opacity: [0.3, 0.6, 0.3],
+                      pathOffset: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 20 + Math.random() * 10,
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: "linear",
+                    }}
+                  />
+                ))}
+                {Array.from({ length: 36 }, (_, i) => ({
+                  id: i + 36,
+                  d: `M-${380 + i * 5} -${189 + i * 6}C-${380 + i * 5} -${189 + i * 6} -${312 + i * 5} ${216 - i * 6} ${152 + i * 5} ${343 - i * 6}C${616 + i * 5} ${470 - i * 6} ${684 + i * 5} ${875 - i * 6} ${684 + i * 5} ${875 - i * 6}`,
+                  width: 0.5 + i * 0.03,
+                })).map((path) => (
+                  <motion.path
+                    key={path.id}
+                    d={path.d}
+                    stroke="currentColor"
+                    strokeWidth={path.width}
+                    strokeOpacity={0.1 + path.id * 0.03}
+                    initial={{ pathLength: 0.3, opacity: 0.6 }}
+                    animate={{
+                      pathLength: 1,
+                      opacity: [0.3, 0.6, 0.3],
+                      pathOffset: [0, 1, 0],
+                    }}
+                    transition={{
+                      duration: 20 + Math.random() * 10,
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: "linear",
+                    }}
+                  />
+                ))}
+              </svg>
             </div>
           </div>
-        </section>
 
-        {/* Career Paths Section */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
+          <div className="relative z-10 container mx-auto px-4 w-full">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -303,47 +301,51 @@ const Landing = () => {
               transition={{ duration: 0.6 }}
               className="text-center mb-16"
             >
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 text-neutral-900 dark:text-white">
                 Explore{' '}
-                <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Career Paths
                 </span>
               </h2>
-              <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              <p className="text-xl text-neutral-600 dark:text-gray-300 max-w-2xl mx-auto">
                 Discover opportunities across diverse fields
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {careerPaths.map((path, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ scale: 1.05, y: -5 }}
-                  className="group cursor-pointer"
-                >
-                  <div className={`relative p-8 rounded-2xl bg-gradient-to-br ${path.gradient} shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden`}>
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-all duration-300" />
+            <ImageAutoSlider>
+              {careerPaths.map((path, index) => {
+                const glowColors: Array<'blue' | 'purple' | 'green' | 'red' | 'orange'> = ['blue', 'purple', 'green', 'red', 'orange', 'blue'];
+                return (
+                  <div
+                    key={index}
+                    className="group cursor-pointer flex-shrink-0 w-[400px]"
+                  >
+                    <GlowCard 
+                      glowColor={glowColors[index]}
+                      customSize
+                      className="!w-full !h-[280px] !p-0 overflow-hidden"
+                    >
+                      <div className={`absolute inset-0 bg-gradient-to-br ${path.gradient} p-8`}>
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-all duration-300" />
 
-                    <div className="relative z-10">
-                      <div className="text-5xl mb-4">{path.icon}</div>
-                      <h3 className="text-2xl font-bold text-white mb-2">{path.title}</h3>
-                      <p className="text-white/90 mb-4">{path.description}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold text-white flex items-center gap-1">
-                          <Users className="w-4 h-4" />
-                          {path.jobs} jobs
-                        </span>
-                        <ArrowRight className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="relative z-10">
+                          <div className="text-5xl mb-4">{path.icon}</div>
+                          <h3 className="text-2xl font-bold text-white mb-2">{path.title}</h3>
+                          <p className="text-white/90 mb-4">{path.description}</p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-white flex items-center gap-1">
+                              <Users className="w-4 h-4" />
+                              {path.jobs} jobs
+                            </span>
+                            <ArrowRight className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    </GlowCard>
                   </div>
-                </motion.div>
-              ))}
-            </div>
+                );
+              })}
+            </ImageAutoSlider>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -393,28 +395,6 @@ const Landing = () => {
             </motion.div>
           </div>
         </section>
-
-        {/* Footer */}
-        <footer className="bg-white/5 border-t border-white/10 py-12">
-          <div className="container mx-auto px-4">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
-                  <Brain className="h-6 w-6 text-white" />
-                </div>
-                <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  CareerPath Pro
-                </span>
-              </div>
-              <p className="text-gray-300 mb-4">
-                Your partner in building a successful career
-              </p>
-              <p className="text-sm text-gray-500">
-                © 2026 CareerPath Pro. All rights reserved.
-              </p>
-            </div>
-          </div>
-        </footer>
       </div>
     </div>
   );

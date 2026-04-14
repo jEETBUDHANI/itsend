@@ -32,6 +32,8 @@ const WORK_VALUES_QUESTIONS = [
     { id: 20, question: "Receiving public acknowledgment", category: "recognition" }
 ];
 
+const ACTIVE_WORK_VALUES_QUESTIONS = WORK_VALUES_QUESTIONS.slice(0, 10);
+
 const IMPORTANCE_OPTIONS = [
     { value: 1, label: "Not Important", emoji: "😐" },
     { value: 2, label: "Somewhat Important", emoji: "🙂" },
@@ -52,14 +54,14 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 export default function WorkValuesTest() {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const [questions, setQuestions] = useState(WORK_VALUES_QUESTIONS);
+    const [questions, setQuestions] = useState(ACTIVE_WORK_VALUES_QUESTIONS);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [answers, setAnswers] = useState<number[]>([]);
     const [showResults, setShowResults] = useState(false);
     const [results, setResults] = useState<any>(null);
 
     useEffect(() => {
-        setQuestions(shuffleArray(WORK_VALUES_QUESTIONS));
+        setQuestions(shuffleArray(ACTIVE_WORK_VALUES_QUESTIONS));
     }, []);
 
     const handleAnswer = (value: number) => {
@@ -140,7 +142,7 @@ export default function WorkValuesTest() {
     };
 
     const handleRetake = () => {
-        setQuestions(shuffleArray(WORK_VALUES_QUESTIONS));
+        setQuestions(shuffleArray(ACTIVE_WORK_VALUES_QUESTIONS));
         setCurrentQuestion(0);
         setAnswers([]);
         setShowResults(false);

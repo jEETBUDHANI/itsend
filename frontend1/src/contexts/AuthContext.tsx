@@ -51,7 +51,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await authApi.login({ email, password });
+    const normalizedEmail = email.trim().toLowerCase();
+    const response = await authApi.login({ email: normalizedEmail, password });
     localStorage.setItem('token', response.access_token);
     localStorage.setItem('user', JSON.stringify(response.user));
     setToken(response.access_token);
@@ -59,11 +60,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const signup = async (email: string, password: string, fullName: string) => {
-    const response = await authApi.signup({ email, password, full_name: fullName });
-    localStorage.setItem('token', response.access_token);
-    localStorage.setItem('user', JSON.stringify(response.user));
-    setToken(response.access_token);
-    setUser(response.user);
+    const normalizedEmail = email.trim().toLowerCase();
+    try {
+      console.log('[AuthContext] Making signup request for:', normalizedEmail);
+      const response = await authApi.signup({ email: normalizedEmail, password, full_name: fullName });
+      console.log('[AuthContext] Signup response:', response);
+      localStorage.setItem('token', response.access_token);
+      localStorage.setItem('user', JSON.stringify(response.user));
+      setToken(response.access_token);
+      setUser(response.user);
+      console.log('[AuthContext] User authenticated:', response.user);
+    } catch (error: any) {
+      console.error('[AuthContext] Signup error:', error?.response?.data || error?.message);
+      throw error;
+    }
   };
 
   const logout = () => {

@@ -6,14 +6,15 @@ import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { predictionApi } from '@/services/api';
 import ChatbotWidget from '@/components/ChatbotWidget';
+import { DottedSurface } from '@/components/ui/dotted-surface';
+import { ElectricBorder } from '@/components/ui/electric-border';
+import { getCompletedAssessments, hasCompletedAllAssessments } from '@/lib/assessmentUtils';
 import {
   Brain,
-  TrendingUp,
   LogOut,
   User,
   Target,
   Map,
-  Award,
   Briefcase,
   ChevronRight,
   Clock,
@@ -22,15 +23,20 @@ import {
   CheckCircle2,
   Zap,
   Trophy,
-  Rocket
+  Rocket,
+  BookOpen,
+  TrendingUp,
+  ArrowRight,
+  Star,
+  Activity
 } from 'lucide-react';
-import OnboardingTour from '@/components/OnboardingTour';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [results, setResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [assessmentDone, setAssessmentDone] = useState(false);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -46,104 +52,166 @@ const Dashboard = () => {
         setIsLoading(false);
       }
     };
-
     fetchResults();
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    setAssessmentDone(hasCompletedAllAssessments(user.id));
+  }, [user]);
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
-  const careerMatches = [
+  const assessmentsCompleted = results.length;
+  const totalAssessments = 5;
+
+  const gatedNavigate = (path: string) => {
+    if (path === '/mentor' && !assessmentDone) {
+      navigate('/assessments');
+      return;
+    }
+    if ((path === '/careers' || path === '/roadmap') && !assessmentDone) {
+      navigate('/assessments');
+      return;
+    }
+    navigate(path);
+  };
+
+  const features = [
     {
-      id: 1,
-      title: 'Software Engineer',
-      icon: '💻',
-      match: 95,
-      salary: '₹12-25 LPA',
-      demand: 'High',
-      gradient: 'from-blue-500 via-blue-600 to-cyan-600'
+      icon: Target,
+      emoji: '🧪',
+      title: 'Take Assessments',
+      description: 'Discover your personality, aptitude, values & risk profile through 5 smart tests',
+      path: '/assessments',
+      gradient: 'from-blue-500 to-cyan-500',
+      bgGlow: 'from-blue-500/20 to-cyan-500/10',
+      tag: assessmentsCompleted > 0 ? `${assessmentsCompleted}/${totalAssessments} done` : 'Start here',
+      tagColor: assessmentsCompleted > 0 ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'
     },
     {
-      id: 2,
-      title: 'Data Scientist',
-      icon: '📊',
-      match: 92,
-      salary: '₹15-30 LPA',
-      demand: 'Very High',
-      gradient: 'from-purple-500 via-purple-600 to-pink-600'
+      icon: Briefcase,
+      emoji: '💼',
+      title: 'Explore Careers',
+      description: 'Browse 13+ career paths with salary insights, job demand & skill requirements',
+      path: '/careers',
+      gradient: 'from-purple-500 to-pink-500',
+      bgGlow: 'from-purple-500/20 to-pink-500/10',
+      tag: assessmentDone ? 'Unlocked' : 'Complete all 5 tests',
+      tagColor: assessmentDone ? 'bg-purple-500/20 text-purple-400' : 'bg-yellow-500/20 text-yellow-300'
     },
     {
-      id: 3,
-      title: 'Product Manager',
-      icon: '🎯',
-      match: 88,
-      salary: '₹18-35 LPA',
-      demand: 'High',
-      gradient: 'from-green-500 via-emerald-600 to-teal-600'
+      icon: Map,
+      emoji: '🗺️',
+      title: 'View Roadmap',
+      description: 'Get a personalized step-by-step academic & career roadmap based on your profile',
+      path: '/roadmap',
+      gradient: 'from-green-500 to-emerald-500',
+      bgGlow: 'from-green-500/20 to-emerald-500/10',
+      tag: assessmentDone ? 'Personalized' : 'Complete all 5 tests',
+      tagColor: assessmentDone ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-300'
+    },
+    {
+      icon: Sparkles,
+      emoji: '🤖',
+      title: 'AI Career Mentor',
+      description: 'Chat with your AI mentor for personalized career advice, tips & guidance',
+      path: '/mentor',
+      gradient: 'from-orange-500 to-red-500',
+      bgGlow: 'from-orange-500/20 to-red-500/10',
+      tag: assessmentDone ? 'AI Powered' : 'Unlock after assessment',
+      tagColor: assessmentDone ? 'bg-orange-500/20 text-orange-400' : 'bg-yellow-500/20 text-yellow-300'
+    },
+    {
+      icon: BarChart3,
+      emoji: '📊',
+      title: 'Track Progress',
+      description: 'Monitor your career readiness, skill growth & assessment results over time',
+      path: '/progress',
+      gradient: 'from-cyan-500 to-blue-500',
+      bgGlow: 'from-cyan-500/20 to-blue-500/10',
+      tag: 'Analytics',
+      tagColor: 'bg-cyan-500/20 text-cyan-400'
+    },
+    {
+      icon: BookOpen,
+      emoji: '🎯',
+      title: 'Holistic Profile',
+      description: 'See your complete career profile combining all assessments and predictions',
+      path: '/holistic-profile',
+      gradient: 'from-pink-500 to-rose-500',
+      bgGlow: 'from-pink-500/20 to-rose-500/10',
+      tag: 'Full view',
+      tagColor: 'bg-pink-500/20 text-pink-400'
     }
   ];
 
-  const stats = [
-    { label: 'Profile Complete', value: results.length > 0 ? '100%' : '60%', icon: Trophy, color: 'from-yellow-400 to-orange-500' },
-    { label: 'Assessments', value: `${results.length}/4`, icon: Target, color: 'from-blue-400 to-cyan-500' },
-    { label: 'Career Matches', value: '12+', icon: Briefcase, color: 'from-purple-400 to-pink-500' },
-    { label: 'Readiness', value: '85%', icon: Zap, color: 'from-green-400 to-emerald-500' }
+  const quickStats = [
+    { label: 'Assessments Done', value: `${assessmentsCompleted}/${totalAssessments}`, icon: Trophy, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
+    { label: 'Career Matches', value: '12+', icon: Briefcase, color: 'text-purple-400', bg: 'bg-purple-500/10' },
+    { label: 'Readiness Score', value: assessmentsCompleted > 0 ? '85%' : '—', icon: Zap, color: 'text-green-400', bg: 'bg-green-500/10' },
+    { label: 'AI Sessions', value: '∞', icon: Sparkles, color: 'text-orange-400', bg: 'bg-orange-500/10' }
   ];
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-pink-900/20"></div>
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      {/* Black + dots background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <DottedSurface className="z-[1] opacity-85" />
       </div>
 
-      <OnboardingTour run={true} />
       <ChatbotWidget />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/50 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-black/60 backdrop-blur-xl">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link to="/dashboard" className="flex items-center gap-2 group">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+          <Link to="/dashboard" className="flex items-center gap-2.5 group">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg shadow-blue-500/25">
               <Brain className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               CareerPath Pro
             </span>
           </Link>
-          <div className="flex items-center gap-4">
-            <nav className="hidden md:flex items-center gap-6">
-              <Link to="/assessments" className="text-gray-400 hover:text-white transition-colors font-medium">
-                Assessments
+
+          <nav className="hidden md:flex items-center gap-1">
+            {[
+              { label: 'Assessments', path: '/assessments' },
+              { label: 'Careers', path: '/careers' },
+              { label: 'Roadmap', path: '/roadmap' },
+              { label: 'Progress', path: '/progress' },
+              { label: 'AI Mentor', path: '/mentor' }
+            ].map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className="px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/8 rounded-lg transition-all font-medium"
+              >
+                {item.label}
               </Link>
-              <Link to="/careers" className="text-gray-400 hover:text-white transition-colors font-medium">
-                Careers
-              </Link>
-              <Link to="/roadmap" className="text-gray-400 hover:text-white transition-colors font-medium">
-                Roadmap
-              </Link>
-              <Link to="/progress" className="text-gray-400 hover:text-white transition-colors font-medium">
-                Progress
-              </Link>
-            </nav>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate('/profile')}
-              className="text-gray-300 hover:text-white hover:bg-white/10"
+              className="text-gray-300 hover:text-white hover:bg-white/10 gap-2"
             >
-              <User className="h-4 w-4 mr-2" />
-              {user?.full_name}
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xs font-bold">
+                {user?.full_name?.charAt(0).toUpperCase()}
+              </div>
+              <span className="hidden md:block">{user?.full_name?.split(' ')[0]}</span>
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleLogout}
-              className="text-gray-300 hover:text-white hover:bg-white/10"
+              className="text-gray-400 hover:text-red-400 hover:bg-red-500/10"
             >
               <LogOut className="h-4 w-4" />
             </Button>
@@ -151,234 +219,225 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <div className="relative z-10 container mx-auto px-4 py-12">
-        {/* Welcome Section */}
+      <div className="relative z-10 container mx-auto px-4 py-10">
+
+        {/* Welcome Hero */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
+          transition={{ duration: 0.6 }}
+          className="mb-10"
         >
-          <h1 className="text-5xl md:text-6xl font-bold mb-4">
-            Welcome back,{' '}
-            <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              {user?.full_name?.split(' ')[0]}
-            </span>
-            ! 👋
-          </h1>
-          <p className="text-xl text-gray-400">Let's continue building your perfect career path</p>
-        </motion.div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ scale: 1.05, y: -5 }}
-            >
-              <Card className="relative p-6 bg-white/5 border-white/10 backdrop-blur-xl hover:bg-white/10 transition-all overflow-hidden group">
-                <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 transition-opacity`}></div>
-                <div className="relative z-10">
-                  <stat.icon className={`h-8 w-8 mb-3 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`} />
-                  <div className="text-3xl font-bold mb-1">{stat.value}</div>
-                  <div className="text-sm text-gray-400">{stat.label}</div>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid md:grid-cols-4 gap-4 mb-12">
-          {[
-            { icon: Target, label: 'Take Assessment', path: '/assessments', gradient: 'from-blue-500 to-cyan-500', tour: 'assessments' },
-            { icon: Briefcase, label: 'Explore Careers', path: '/careers', gradient: 'from-purple-500 to-pink-500', tour: 'careers' },
-            { icon: Map, label: 'View Roadmap', path: '/roadmap', gradient: 'from-green-500 to-emerald-500', tour: 'roadmap' },
-            { icon: Sparkles, label: 'AI Mentor', path: '/mentor', gradient: 'from-orange-500 to-red-500', tour: 'progress' }
-          ].map((action, index) => (
-            <motion.div
-              key={action.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 + index * 0.1 }}
-              whileHover={{ scale: 1.05, y: -5 }}
-              onClick={() => navigate(action.path)}
-              className="cursor-pointer"
-              data-tour={action.tour}
-            >
-              <Card className={`relative p-6 bg-gradient-to-br ${action.gradient} border-0 overflow-hidden group`}>
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-all"></div>
-                <div className="relative z-10">
-                  <action.icon className="h-6 w-6 mb-3 text-white" />
-                  <h3 className="font-bold text-white">{action.label}</h3>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Career Matches */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-3xl font-bold flex items-center gap-3">
-                <Rocket className="h-8 w-8 text-purple-400" />
-                Your Top Matches
-              </h2>
-              <Link to="/careers" className="text-blue-400 hover:text-blue-300 flex items-center gap-1 font-medium">
-                View All <ChevronRight className="w-4 h-4" />
-              </Link>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-xs text-gray-400 mb-4">
+                <Activity className="w-3 h-3 text-green-400" />
+                Career guidance platform
+              </div>
+              <h1 className="text-4xl md:text-6xl font-bold mb-3 leading-tight">
+                Hey,{' '}
+                <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  {user?.full_name?.split(' ')[0]}
+                </span>! 👋
+              </h1>
+              <p className="text-lg text-gray-400 max-w-xl">
+                What would you like to do today? Choose a feature below to continue building your career journey.
+              </p>
             </div>
 
-            {careerMatches.map((career, index) => (
-              <motion.div
-                key={career.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.8 + index * 0.1 }}
-                whileHover={{ scale: 1.02, x: 10 }}
-                onClick={() => navigate(`/careers/${career.id}`)}
-                className="cursor-pointer"
-              >
-                <Card className={`relative p-6 bg-gradient-to-r ${career.gradient} border-0 overflow-hidden group`}>
-                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-all"></div>
-                  <div className="relative z-10 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="text-5xl">{career.icon}</div>
-                      <div>
-                        <h3 className="text-2xl font-bold mb-2">{career.title}</h3>
-                        <div className="flex items-center gap-4 text-sm text-white/90">
-                          <span className="flex items-center gap-1">
-                            💰 {career.salary}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            📈 {career.demand}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-4xl font-bold mb-1">{career.match}%</div>
-                      <div className="text-sm text-white/80">Match</div>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
+            {/* Quick Stats Row */}
+            <div className="flex gap-3 flex-wrap md:flex-nowrap">
+              {quickStats.map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 + i * 0.08 }}
+                  className={`flex flex-col items-center justify-center w-20 h-20 rounded-2xl ${stat.bg} border border-white/10 backdrop-blur-sm`}
+                >
+                  <stat.icon className={`w-5 h-5 ${stat.color} mb-1`} />
+                  <div className="text-lg font-bold leading-none">{stat.value}</div>
+                  <div className="text-[9px] text-gray-500 text-center mt-0.5 leading-tight px-1">{stat.label}</div>
+                </motion.div>
+              ))}
+            </div>
           </div>
+        </motion.div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Progress */}
+        {/* --- MAIN FEATURE CARDS --- */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="mb-4"
+        >
+          <h2 className="text-xl font-semibold text-gray-300 mb-6 flex items-center gap-2">
+            <Star className="w-5 h-5 text-yellow-400" />
+            Choose what to explore
+          </h2>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
+          {features.map((feature, index) => {
+            const featureColors = ["#3b82f6", "#a855f7", "#10b981", "#f97316", "#06b6d4", "#ec4899"];
+            return (
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6 }}
+              key={feature.title}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + index * 0.08, duration: 0.5 }}
+              whileHover={{ scale: 1.03, y: -6 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => gatedNavigate(feature.path)}
+              className="cursor-pointer group h-full"
             >
-              <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-xl">
-                <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-blue-400" />
-                  Your Progress
-                </h3>
-                <div className="space-y-4">
-                  {[
-                    { label: 'Profile', value: results.length > 0 ? 100 : 60, color: 'from-blue-500 to-cyan-500' },
-                    { label: 'Assessments', value: (results.length / 4) * 100, color: 'from-purple-500 to-pink-500' },
-                    { label: 'Careers Explored', value: 40, color: 'from-green-500 to-emerald-500' }
-                  ].map((item, i) => (
-                    <div key={i}>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-sm text-gray-400">{item.label}</span>
-                        <span className="text-sm font-bold">{Math.round(item.value)}%</span>
-                      </div>
-                      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${item.value}%` }}
-                          transition={{ delay: 0.8 + i * 0.2, duration: 1 }}
-                          className={`h-full bg-gradient-to-r ${item.color}`}
-                        />
-                      </div>
+              <ElectricBorder color={featureColors[index]} variant="swirl" className="h-full">
+                <Card className="relative h-full p-6 bg-white/[0.04] border-0 backdrop-blur-xl overflow-hidden hover:bg-white/10 transition-all duration-300">
+                {/* Glow on hover */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.bgGlow} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+
+                {/* Top-right gradient accent */}
+                <div className={`absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-br ${feature.gradient} opacity-20 rounded-full blur-2xl group-hover:opacity-40 transition-opacity`} />
+
+                <div className="relative z-10 flex flex-col h-full">
+                  {/* Icon row */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.gradient} shadow-lg text-2xl`}>
+                      {feature.emoji}
                     </div>
-                  ))}
+                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${feature.tagColor}`}>
+                      {feature.tag}
+                    </span>
+                  </div>
+
+                  {/* Text */}
+                  <h3 className="text-xl font-bold mb-2 group-hover:text-white transition-colors">{feature.title}</h3>
+                  <p className="text-sm text-gray-400 leading-relaxed flex-1 group-hover:text-gray-300 transition-colors">
+                    {feature.description}
+                  </p>
+
+                  {/* CTA */}
+                  <div className={`mt-5 flex items-center gap-1 text-sm font-semibold bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent`}>
+                    Open
+                    <ArrowRight className="w-4 h-4 text-current opacity-70 group-hover:translate-x-1 transition-transform" style={{ color: 'inherit' }} />
+                  </div>
                 </div>
               </Card>
+              </ElectricBorder>
             </motion.div>
+          );
+          })}
+        </div>
 
-            {/* Recent Activity */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.7 }}
-            >
-              <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-xl">
-                <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-purple-400" />
-                  Recent Activity
-                </h3>
-                {results.length > 0 ? (
-                  <div className="space-y-3">
-                    {results.slice(0, 3).map((result) => (
-                      <div key={result.id} className="flex items-start gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
-                        <div className="p-2 bg-green-500/20 rounded-lg">
-                          <CheckCircle2 className="w-4 h-4 text-green-400" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-semibold">Assessment Completed</p>
-                          <p className="text-xs text-gray-400">Type: {result.personality_type}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-gray-400 mb-4">No activity yet</p>
-                    <Button
-                      onClick={() => navigate('/assessments')}
-                      className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+        {/* Bottom Row: Recent Activity + Next Step Banner */}
+        <div className="grid lg:grid-cols-3 gap-5">
+
+          {/* Recent Activity */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="lg:col-span-2"
+          >
+            <Card className="p-6 bg-white/[0.04] border border-white/10 backdrop-blur-xl h-full">
+              <h3 className="text-lg font-bold mb-5 flex items-center gap-2">
+                <Clock className="w-5 h-5 text-purple-400" />
+                Recent Activity
+              </h3>
+              {results.length > 0 ? (
+                <div className="space-y-3">
+                  {results.slice(0, 4).map((result, i) => (
+                    <motion.div
+                      key={result.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.8 + i * 0.06 }}
+                      className="flex items-center gap-4 p-3 bg-white/5 rounded-xl hover:bg-white/10 transition-colors cursor-pointer"
+                      onClick={() => navigate(`/results/${result.id}`)}
                     >
-                      Start Now
-                    </Button>
-                  </div>
-                )}
-              </Card>
-            </motion.div>
+                      <div className="w-9 h-9 rounded-xl bg-green-500/15 flex items-center justify-center flex-shrink-0">
+                        <CheckCircle2 className="w-5 h-5 text-green-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold">Assessment Completed</p>
+                        <p className="text-xs text-gray-500 truncate">Personality type: {result.personality_type}</p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-600 flex-shrink-0" />
+                    </motion.div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-10 text-center">
+                  <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4 text-3xl">🎯</div>
+                  <p className="text-gray-400 mb-2 font-medium">No activity yet</p>
+                  <p className="text-sm text-gray-600 mb-5">Complete your first assessment to see your results here</p>
+                  <Button
+                    onClick={() => navigate('/assessments')}
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/25"
+                  >
+                    Start Assessment
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
+                </div>
+              )}
+            </Card>
+          </motion.div>
 
-            {/* Next Steps */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8 }}
-            >
-              <Card className="p-6 bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-blue-500/20 backdrop-blur-xl">
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-yellow-400" />
-                  Next Steps
+          {/* Next Step Banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.75 }}
+          >
+            <Card className="relative p-6 bg-gradient-to-br from-blue-600/20 via-purple-600/15 to-pink-600/10 border border-blue-500/20 backdrop-blur-xl overflow-hidden h-full flex flex-col">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/20 to-purple-500/10 rounded-full blur-3xl" />
+              <div className="relative z-10 flex flex-col h-full">
+                <h3 className="text-lg font-bold mb-1 flex items-center gap-2">
+                  <Rocket className="w-5 h-5 text-yellow-400" />
+                  Suggested Next Step
                 </h3>
-                <div className="space-y-2">
+                <p className="text-xs text-gray-500 mb-6">Based on your profile</p>
+
+                <div className="space-y-3 flex-1">
                   {[
-                    { label: 'Complete Assessments', path: '/assessments' },
-                    { label: 'Explore Careers', path: '/careers' },
-                    { label: 'Build Roadmap', path: '/roadmap' }
-                  ].map((step) => (
+                    { label: assessmentsCompleted === 0 ? '→ Start with assessments' : '→ Complete remaining tests', path: '/assessments', active: true },
+                    { label: '→ Explore career matches', path: '/careers', active: false },
+                    { label: '→ Get your roadmap', path: '/roadmap', active: false },
+                    { label: '→ Chat with AI Mentor', path: '/mentor', active: false }
+                  ].map((step, i) => (
                     <Link
-                      key={step.label}
+                      key={step.path}
                       to={step.path}
-                      className="block p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-all group"
+                      className={`flex items-center justify-between p-3 rounded-xl transition-all group ${step.active
+                        ? 'bg-blue-500/20 border border-blue-500/30 hover:bg-blue-500/30'
+                        : 'bg-white/5 hover:bg-white/10'
+                        }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold">{step.label}</span>
-                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                      </div>
+                      <span className={`text-sm font-medium ${step.active ? 'text-blue-300' : 'text-gray-400'}`}>
+                        {step.label}
+                      </span>
+                      <ChevronRight className="w-4 h-4 text-gray-600 group-hover:translate-x-0.5 transition-transform" />
                     </Link>
                   ))}
                 </div>
-              </Card>
-            </motion.div>
-          </div>
+
+                <div className="mt-6 pt-4 border-t border-white/10">
+                  <div className="flex justify-between text-xs text-gray-500 mb-2">
+                    <span>Overall Progress</span>
+                    <span>{Math.round((assessmentsCompleted / totalAssessments) * 100)}%</span>
+                  </div>
+                  <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(assessmentsCompleted / totalAssessments) * 100}%` }}
+                      transition={{ delay: 1, duration: 1 }}
+                      className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
         </div>
       </div>
     </div>

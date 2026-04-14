@@ -11,7 +11,20 @@ class User(db.Model):
     full_name = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Academic stage tracking for student guidance
+    # User role - Graduate Student Focus
+    user_role = db.Column(db.String(50), default='graduate_student')  # Primary: 'graduate_student'
+    
+    # Graduate Student Profile
+    degree = db.Column(db.String(100))  # 'B.Tech', 'BBA', 'B.Sc', 'B.A', etc.
+    specialization = db.Column(db.String(100))  # 'Computer Science', 'Finance', etc.
+    graduation_year = db.Column(db.Integer)  # 2024, 2025, etc.
+    current_year = db.Column(db.String(50))  # 'final_year', 'fresher', 'graduated'
+    
+    # Skills & Interests
+    current_skills = db.Column(db.JSON)  # ['Python', 'Java', 'React', ...]
+    career_interests = db.Column(db.JSON)  # ['Software Engineer', 'Data Science', ...]
+    
+    # Legacy academic fields (for backward compatibility)
     academic_stage = db.Column(db.String(50))  # '9-10', '11-12', 'college', 'working'
     current_stream = db.Column(db.String(50))  # 'Science', 'Commerce', 'Arts'
     target_exams = db.Column(db.JSON)  # ['JEE', 'NEET', 'CUET', etc.]
@@ -23,6 +36,9 @@ class User(db.Model):
     holistic_profile = db.relationship('HolisticProfile', backref='user', uselist=False)
     feedback = db.relationship('CareerFeedback', backref='user', lazy=True)
     roadmaps = db.relationship('Roadmap', backref='user', lazy=True)
+    job_readiness_scores = db.relationship('JobReadinessScore', backref='user', lazy=True)
+    action_plans = db.relationship('ActionPlan', backref='user', lazy=True)
+    placement_prep_attempts = db.relationship('PlacementPrepAttempt', backref='user', lazy=True)
     
     def set_password(self, password):
         """Hash and set password"""
@@ -37,6 +53,13 @@ class User(db.Model):
             'id': self.id,
             'email': self.email,
             'full_name': self.full_name,
+            'user_role': self.user_role,
+            'degree': self.degree,
+            'specialization': self.specialization,
+            'graduation_year': self.graduation_year,
+            'current_year': self.current_year,
+            'current_skills': self.current_skills or [],
+            'career_interests': self.career_interests or [],
             'academic_stage': self.academic_stage,
             'current_stream': self.current_stream,
             'target_exams': self.target_exams or [],
@@ -208,4 +231,8 @@ class UserProgressSnapshot(db.Model):
 
 
 # Import extended models
-from app.models_extended import CareerPath, ExamPreparation, Job, Roadmap
+from app.models_extended import (
+    CareerPath, ExamPreparation, Job, Roadmap,
+    JobReadinessScore, CareerComparison, ActionPlan, 
+    PlacementPrepAttempt, CareerSwitchSimulation
+)

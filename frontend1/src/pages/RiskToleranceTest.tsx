@@ -27,6 +27,8 @@ const RISK_TOLERANCE_QUESTIONS = [
     { id: 15, question: "I avoid financial investments with market fluctuations", reverse: true }
 ];
 
+const ACTIVE_RISK_TOLERANCE_QUESTIONS = RISK_TOLERANCE_QUESTIONS.slice(0, 10);
+
 const AGREEMENT_OPTIONS = [
     { value: 1, label: "Strongly Disagree" },
     { value: 2, label: "Disagree" },
@@ -55,14 +57,14 @@ const getRiskProfile = (score: number) => {
 export default function RiskToleranceTest() {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const [questions, setQuestions] = useState(RISK_TOLERANCE_QUESTIONS);
+    const [questions, setQuestions] = useState(ACTIVE_RISK_TOLERANCE_QUESTIONS);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [answers, setAnswers] = useState<number[]>([]);
     const [showResults, setShowResults] = useState(false);
     const [riskScore, setRiskScore] = useState(0);
 
     useEffect(() => {
-        setQuestions(shuffleArray(RISK_TOLERANCE_QUESTIONS));
+        setQuestions(shuffleArray(ACTIVE_RISK_TOLERANCE_QUESTIONS));
     }, []);
 
     const handleAnswer = (value: number) => {
@@ -135,7 +137,7 @@ export default function RiskToleranceTest() {
     };
 
     const handleRetake = () => {
-        setQuestions(shuffleArray(RISK_TOLERANCE_QUESTIONS));
+        setQuestions(shuffleArray(ACTIVE_RISK_TOLERANCE_QUESTIONS));
         setCurrentQuestion(0);
         setAnswers([]);
         setShowResults(false);

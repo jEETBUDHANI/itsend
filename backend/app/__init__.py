@@ -71,6 +71,7 @@ def create_app():
     from app.routes.feedback import feedback_bp
     from app.routes.admin import admin_bp
     from app.routes.recruiter import recruiter_bp
+    from app.routes.graduate import graduate_bp
     
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(prediction_bp, url_prefix='/api/predict')
@@ -85,6 +86,7 @@ def create_app():
     app.register_blueprint(feedback_bp, url_prefix='/api/feedback')
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
     app.register_blueprint(recruiter_bp, url_prefix='/api/recruiter')
+    app.register_blueprint(graduate_bp, url_prefix='/api/graduate')
     
     # Create tables
     with app.app_context():

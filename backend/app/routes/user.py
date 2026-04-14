@@ -29,7 +29,7 @@ def get_profile():
 def update_profile():
     """Update user profile"""
     try:
-        user_id = get_jwt_identity()
+        user_id = int(get_jwt_identity())
         user = User.query.get(user_id)
         
         if not user:
@@ -37,9 +37,47 @@ def update_profile():
         
         data = request.get_json()
         
-        # Update fields
+        # Update basic fields
         if 'full_name' in data:
             user.full_name = data['full_name']
+        
+        # Update graduate-specific fields
+        if 'degree' in data:
+            user.degree = data['degree']
+
+        # Accept both legacy and new field names from frontend
+        if 'specialization' in data:
+            user.specialization = data['specialization']
+
+        if 'branch' in data:
+            user.specialization = data['branch']
+
+        if 'current_year' in data:
+            user.current_year = data['current_year']
+
+        if 'skills' in data:
+            user.current_skills = data['skills']
+
+        if 'current_skills' in data:
+            user.current_skills = data['current_skills']
+
+        if 'career_interests' in data:
+            user.career_interests = data['career_interests']
+
+        if 'graduation_year' in data:
+            user.graduation_year = data['graduation_year']
+
+        if 'academic_stage' in data:
+            user.academic_stage = data['academic_stage']
+
+        if 'current_stream' in data:
+            user.current_stream = data['current_stream']
+
+        if 'target_exams' in data:
+            user.target_exams = data['target_exams']
+
+        if 'class_grade' in data:
+            user.class_grade = data['class_grade']
         
         db.session.commit()
         
