@@ -5,7 +5,7 @@ import { X, Send, Loader2, Bot, User, MessageCircle, Sparkles, Minimize2 } from 
 import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}`;
 
 interface Message {
     role: 'user' | 'assistant';

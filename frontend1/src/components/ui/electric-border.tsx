@@ -198,7 +198,7 @@ const ElectricBorder = ({
         <div className="electric-border-content">{children}</div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .ec-border-wrap {
           position: relative;
           display: block;

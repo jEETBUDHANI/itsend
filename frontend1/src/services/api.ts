@@ -1,6 +1,27 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}`;
+
+const isTokenExpired = (token: string) => {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      return false;
+    }
+
+    const payload = JSON.parse(
+      atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
+    );
+
+    if (!payload?.exp) {
+      return false;
+    }
+
+    return payload.exp * 1000 <= Date.now();
+  } catch {
+    return false;
+  }
+};
 
 const api = axios.create({
   baseURL: API_URL,
@@ -14,6 +35,13 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
+      if (isTokenExpired(token)) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+        return Promise.reject(new axios.Cancel('Expired token cleared before request'));
+      }
+
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -93,6 +121,97 @@ export const userApi = {
     gpa?: number;
   }) => {
     const response = await api.put('/user/profile', data);
+    return response.data;
+  },
+
+  completeOnboarding: async (data: {
+    education_level?: string;
+    education_module?: 'class10' | 'class12' | 'college';
+    stream?: string;
+    career_interests?: string[];
+    degree?: string;
+    specialization?: string;
+    current_year?: string;
+  }) => {
+    const response = await api.post('/user/complete-onboarding', data);
+    return response.data;
+  },
+};
+
+export const assessmentApi = {
+  getHolisticProfile: async () => {
+    const response = await api.get('/assessment/holistic');
+    return response.data;
+  },
+
+  getAssessmentContext: async (careerName: string) => {
+    const response = await api.get(`/assessment/context/${encodeURIComponent(careerName)}`);
+    return response.data;
+  },
+
+  getSkillGaps: async (careerName: string) => {
+    const response = await api.get(`/assessment/skill-gaps/${encodeURIComponent(careerName)}`);
+    return response.data;
+  },
+};
+
+export const modulesApi = {
+  getCatalog: async () => {
+    const response = await api.get('/modules/catalog');
+    return response.data;
+  },
+
+  selectModule: async (module: 'class10' | 'class12' | 'college') => {
+    const response = await api.post('/modules/select', { module });
+    return response.data;
+  },
+
+  getDashboard: async () => {
+    const response = await api.get('/modules/dashboard');
+    return response.data;
+  },
+
+  submitAssessment: async (assessmentKey: string, payload: { inputs: Record<string, number> }) => {
+    const response = await api.post(`/modules/assessments/${assessmentKey}`, payload);
+    return response.data;
+  },
+
+  getRecommendation: async () => {
+    const response = await api.get('/modules/recommendation');
+    return response.data;
+  },
+
+  getRoadmap: async () => {
+    const response = await api.get('/modules/roadmap');
+    return response.data;
+  },
+
+  generateOutputs: async () => {
+    const response = await api.post('/modules/generate', {});
+    return response.data;
+  },
+};
+
+export const class12Api = {
+  submitAssessment: async (payload: Record<string, any>) => {
+    const response = await api.post('/class12/submit/assessment', payload);
+    return response.data;
+  },
+
+  getResults: async () => {
+    const response = await api.get('/class12/results');
+    return response.data;
+  },
+};
+
+export const collegeApi = {
+  submitAssessment: async (payload: Record<string, any>) => {
+    const response = await api.post('/college/submit/assessment', payload);
+    return response.data;
+  },
+
+  getResults: async () => {
+    const response = await api.get('/college/results');
     return response.data;
   },
 };

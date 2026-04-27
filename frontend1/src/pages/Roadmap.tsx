@@ -27,12 +27,19 @@ const careerColors: { [key: string]: string } = {
     "Engineer": "#3b82f6"
 };
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}`;
 
 interface CareerMatch {
     name: string;
     match: number;
     description: string;
+}
+
+interface RoadmapStep {
+    title: string;
+    desc: string;
+    duration?: string;
+    icon?: string;
 }
 
 const CAREER_ROADMAPS: any = {
@@ -134,10 +141,77 @@ const Roadmap = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [hasProfile, setHasProfile] = useState(false);
     const [generalCareers, setGeneralCareers] = useState<CareerMatch[]>([]);
+    const [roadmapSteps, setRoadmapSteps] = useState<RoadmapStep[]>([]);
+    const [roadmapNote, setRoadmapNote] = useState<string | null>(null);
+    const [roadmapLoading, setRoadmapLoading] = useState(false);
 
     useEffect(() => {
         loadMatchedCareers();
     }, []);
+
+    useEffect(() => {
+        const loadRoadmap = async () => {
+            if (!selectedCareer?.name || !user || !hasCompletedAllAssessments(user.id)) {
+                setRoadmapSteps([]);
+                setRoadmapNote(null);
+                return;
+            }
+
+            try {
+                setRoadmapLoading(true);
+                const token = localStorage.getItem('token');
+                const response = await axios.get(`${API_URL}/roadmap/career/${encodeURIComponent(selectedCareer.name)}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                const roadmap = response.data?.roadmap || {};
+                const note = roadmap.education_note || response.data?.education_level || null;
+                setRoadmapNote(typeof note === 'string' ? note : null);
+
+                const steps = normalizeRoadmapSteps(roadmap);
+                setRoadmapSteps(steps);
+            } catch (error) {
+                console.error('[Roadmap] Failed to load roadmap:', error);
+                setRoadmapSteps([]);
+                setRoadmapNote(null);
+            } finally {
+                setRoadmapLoading(false);
+            }
+        };
+
+        loadRoadmap();
+    }, [selectedCareer, user]);
+
+    const normalizeRoadmapSteps = (roadmap: any): RoadmapStep[] => {
+        if (!roadmap) return [];
+
+        if (Array.isArray(roadmap.steps)) {
+            return roadmap.steps.map((step: any) => ({
+                title: step.title || step.focus || 'Next Step',
+                desc: step.desc || step.description || step.focus || '',
+                duration: step.duration || step.timeline || '',
+                icon: step.icon || '🎯'
+            }));
+        }
+
+        const orderedKeys = Object.keys(roadmap)
+            .filter((key) => key.startsWith('step_') || key.startsWith('year_'))
+            .sort();
+
+        if (orderedKeys.length > 0) {
+            return orderedKeys.map((key) => {
+                const value = roadmap[key] || {};
+                return {
+                    title: value.title || value.focus || key.replace('_', ' ').toUpperCase(),
+                    desc: value.description || value.focus || value.tasks?.[0] || 'Personalized roadmap step',
+                    duration: value.duration || value.timeline || '',
+                    icon: value.icon || '🎯'
+                };
+            });
+        }
+
+        return [];
+    };
 
     const loadMatchedCareers = async () => {
         const hasCompletedAll = user ? hasCompletedAllAssessments(user.id) : false;
@@ -253,7 +327,13 @@ const Roadmap = () => {
         );
     }
 
-    const roadmap = selectedCareer ? CAREER_ROADMAPS[selectedCareer.name] || CAREER_ROADMAPS["Software Engineer"] : null;
+    const staticRoadmap = selectedCareer
+        ? CAREER_ROADMAPS[selectedCareer.name] || CAREER_ROADMAPS["Software Engineer"]
+        : null;
+
+    const activeRoadmapSteps = roadmapSteps.length > 0
+        ? roadmapSteps
+        : normalizeRoadmapSteps(staticRoadmap);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
@@ -371,7 +451,7 @@ const Roadmap = () => {
                 </motion.div>
 
                 {/* Roadmap Steps */}
-                {roadmap && (
+                {selectedCareer && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -383,7 +463,19 @@ const Roadmap = () => {
                             Step-by-Step Roadmap: {selectedCareer?.name}
                         </h3>
 
-                        {roadmap.steps.map((step: any, index: number) => (
+                        {roadmapLoading && (
+                            <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-gray-300">
+                                Loading personalized roadmap...
+                            </div>
+                        )}
+
+                        {roadmapNote && (
+                            <div className="p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-100">
+                                {roadmapNote}
+                            </div>
+                        )}
+
+                        {activeRoadmapSteps.map((step: any, index: number) => (
                             <motion.div
                                 key={index}
                                 initial={{ opacity: 0, x: -20 }}
@@ -409,7 +501,7 @@ const Roadmap = () => {
                                         </div>
                                     </CardContent>
                                 </Card>
-                                {index < roadmap.steps.length - 1 && (
+                                {index < activeRoadmapSteps.length - 1 && (
                                     <div className="flex justify-center py-4">
                                         <ArrowRight className="w-8 h-8 text-blue-400 rotate-90" />
                                     </div>

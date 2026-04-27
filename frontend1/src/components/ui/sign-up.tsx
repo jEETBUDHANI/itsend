@@ -1,4 +1,4 @@
-﻿import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle, useMemo, useCallback, createContext, Children } from "react";
 // Importing class-variance-authority for the built-in button component
 import { cva, type VariantProps } from "class-variance-authority";
@@ -125,7 +125,7 @@ const GradientBackground = () => (
         <style>
             {` @keyframes float1 { 0% { transform: translate(0, 0); } 50% { transform: translate(-10px, 10px); } 100% { transform: translate(0, 0); } } @keyframes float2 { 0% { transform: translate(0, 0); } 50% { transform: translate(10px, -10px); } 100% { transform: translate(0, 0); } } `}
         </style>
-        <svg width="100%" height="100%" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" className="absolute top-0 left-0 w-full h-full">
+        <svg width="100%" height="100%" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" className="absolute top-0 left-0 w-full h-full opacity-40 blur-2xl scale-125">
             <defs>
                 <linearGradient id="rev_grad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style={{stopColor: 'var(--color-primary)', stopOpacity:0.8}} /><stop offset="100%" style={{stopColor: 'var(--color-chart-3)', stopOpacity:0.6}} /></linearGradient>
                 <linearGradient id="rev_grad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style={{stopColor: 'var(--color-chart-4)', stopOpacity:0.9}} /><stop offset="50%" style={{stopColor: 'var(--color-secondary)', stopOpacity:0.7}} /><stop offset="100%" style={{stopColor: 'var(--color-chart-1)', stopOpacity:0.6}} /></linearGradient>
@@ -221,19 +221,13 @@ export const AuthComponent = ({ logo = <DefaultLogo />, brandName = "CareerPath 
     try {
       if (authMode === 'signin' && onLogin) {
         await onLogin(normalizedEmail, password);
-        setModalStatus('success');
-        setTimeout(() => {
-          setModalStatus('closed');
-          onSubmitSuccess?.();
-        }, 1000);
+        setModalStatus('closed');
+        onSubmitSuccess?.();
       } else if (authMode === 'signup' && onSignup) {
         await onSignup(normalizedEmail, password, fullName.trim() || normalizedEmail.split('@')[0]);
         fireSideCanons();
-        setModalStatus('success');
-        setTimeout(() => {
-          setModalStatus('closed');
-          onSubmitSuccess?.();
-        }, 1500);
+        setModalStatus('closed');
+        onSubmitSuccess?.();
       } else {
         // Fallback: no API wired, just animate and proceed
         const loadingStepsCount = modalSteps.length - 1;
@@ -376,7 +370,7 @@ useEffect(() => {
             <fieldset disabled={modalStatus !== 'closed'} className="relative z-10 flex flex-col items-center gap-8 w-[280px] mx-auto p-4">
                 <AnimatePresence mode="wait">
                     {authStep === "email" && <motion.div key="email-content" initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full flex flex-col items-center gap-4">
-                        <BlurFade delay={0.25 * 1} className="w-full"><div className="text-center"><p className="font-serif font-light text-4xl sm:text-5xl md:text-6xl tracking-tight text-foreground whitespace-nowrap">{authMode === 'signup' ? 'Get started with Us' : 'Welcome Back'}</p></div></BlurFade>
+                        <BlurFade delay={0.25 * 1} className="w-full"><div className="text-center"><p className="font-serif font-semibold text-4xl sm:text-5xl md:text-6xl tracking-tight text-foreground whitespace-nowrap">{authMode === 'signup' ? 'Get started with Us' : 'Welcome Back'}</p></div></BlurFade>
                         {authMode === 'signup' && <>
                           <BlurFade delay={0.25 * 2}><p className="text-sm font-medium text-muted-foreground">Continue with</p></BlurFade>
                           <BlurFade delay={0.25 * 3}><div className="flex items-center justify-center gap-4 w-full">
@@ -385,26 +379,26 @@ useEffect(() => {
                           </div></BlurFade>
                           <BlurFade delay={0.25 * 4} className="w-[300px]"><div className="flex items-center w-full gap-2 py-2"><hr className="w-full border-border"/><span className="text-xs font-semibold text-muted-foreground">OR</span><hr className="w-full border-border"/></div></BlurFade>
                         </>}
-                        <BlurFade delay={authMode === 'signup' ? 0.25 * 5 : 0.25 * 2} className="w-full mt-4">
+                        <BlurFade delay={authMode === 'signup' ? 0.25 * 5 : 0.25 * 2} className="w-full mt-6">
                           <button 
                             type="button" 
                             onClick={toggleMode} 
-                            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                            className="text-base font-bold text-foreground"
                           >
                             {authMode === 'signup' ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
                           </button>
                         </BlurFade>
                     </motion.div>}
                     {authStep === "name" && authMode === 'signup' && <motion.div key="name-title" initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full flex flex-col items-center text-center gap-4">
-                        <BlurFade delay={0} className="w-full"><div className="text-center"><p className="font-serif font-light text-4xl sm:text-5xl tracking-tight text-foreground whitespace-nowrap">What's your name?</p></div></BlurFade>
+                        <BlurFade delay={0} className="w-full"><div className="text-center"><p className="font-serif font-semibold text-4xl sm:text-5xl tracking-tight text-foreground whitespace-nowrap">What's your name?</p></div></BlurFade>
                         <BlurFade delay={0.25 * 1}><p className="text-sm font-medium text-muted-foreground">We'll personalise your experience</p></BlurFade>
                     </motion.div>}
                     {authStep === "password" && <motion.div key="password-title" initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full flex flex-col items-center text-center gap-4">
-                        <BlurFade delay={0} className="w-full"><div className="text-center"><p className="font-serif font-light text-4xl sm:text-5xl tracking-tight text-foreground whitespace-nowrap">{authMode === 'signup' ? 'Create your password' : 'Enter your password'}</p></div></BlurFade>
+                        <BlurFade delay={0} className="w-full"><div className="text-center"><p className="font-serif font-semibold text-4xl sm:text-5xl tracking-tight text-foreground whitespace-nowrap">{authMode === 'signup' ? 'Create your password' : 'Enter your password'}</p></div></BlurFade>
                         <BlurFade delay={0.25 * 1}><p className="text-sm font-medium text-muted-foreground">{authMode === 'signup' ? 'Your password must be at least 6 characters long.' : 'Enter your password to continue.'}</p></BlurFade>
                     </motion.div>}
                      {authStep === "confirmPassword" && authMode === 'signup' && <motion.div key="confirm-title" initial={{ y: 6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease: "easeOut" }} className="w-full flex flex-col items-center text-center gap-4">
-                         <BlurFade delay={0} className="w-full"><div className="text-center"><p className="font-serif font-light text-4xl sm:text-5xl tracking-tight text-foreground whitespace-nowrap">One Last Step</p></div></BlurFade>
+                         <BlurFade delay={0} className="w-full"><div className="text-center"><p className="font-serif font-semibold text-4xl sm:text-5xl tracking-tight text-foreground whitespace-nowrap">One Last Step</p></div></BlurFade>
                          <BlurFade delay={0.25 * 1}><p className="text-sm font-medium text-muted-foreground">Confirm your password to continue</p></BlurFade>
                     </motion.div>}
                 </AnimatePresence>

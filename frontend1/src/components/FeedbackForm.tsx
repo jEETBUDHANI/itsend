@@ -46,7 +46,7 @@ export function FeedbackForm({ careerName, onSubmitSuccess }: FeedbackFormProps)
             const token = localStorage.getItem("token");
 
             await axios.post(
-                "http://localhost:5000/api/feedback/career",
+                `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/feedback/career`,
                 {
                     career_id: careerName,
                     rating,

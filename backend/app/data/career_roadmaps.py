@@ -107,13 +107,25 @@ def generate_personalized_roadmap(career, user_profile):
     # Add recommendations based on profile
     if user_profile.get('riasec'):
         dominant = max(user_profile['riasec'], key=user_profile['riasec'].get)
-        
-        # Adjust focus areas based on personality
-        if dominant == 'I':  # Investigative
-            personalized['year_1']['additional_focus'] = "Research and analysis"
-        elif dominant == 'A':  # Artistic
-            personalized['year_1']['additional_focus'] = "Creative projects"
-        elif dominant == 'E':  # Enterprising
-            personalized['year_1']['additional_focus'] = "Leadership and networking"
+
+        # Find first available step/year key safely.
+        first_key = 'year_1' if 'year_1' in personalized else next(iter(personalized.keys()), None)
+        if first_key and isinstance(personalized.get(first_key), dict):
+            # Adjust focus areas based on personality
+            if dominant == 'I':  # Investigative
+                personalized[first_key]['additional_focus'] = "Research and analysis"
+            elif dominant == 'A':  # Artistic
+                personalized[first_key]['additional_focus'] = "Creative projects"
+            elif dominant == 'E':  # Enterprising
+                personalized[first_key]['additional_focus'] = "Leadership and networking"
+
+    # Education-level context from onboarding profile.
+    stage = user_profile.get('education_level') or user_profile.get('academic_stage')
+    if stage in ('9-10', 'class_10', '10', '10th_pass'):
+        personalized['education_note'] = 'Class 10 track: focus on stream decision and board foundations.'
+    elif stage in ('11-12', 'class_12', '12', '12th_pass'):
+        personalized['education_note'] = 'Class 12 track: focus on entrance exams, college selection, and core skill prep.'
+    elif stage in ('college', 'college_student'):
+        personalized['education_note'] = 'College track: focus on internships, project depth, interviews, and placements.'
     
     return personalized

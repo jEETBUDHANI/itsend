@@ -27,6 +27,8 @@ import { SkillGapView } from '@/components/SkillGapView';
 import { FeedbackForm } from '@/components/FeedbackForm';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}`;
+
 const CareerDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -35,22 +37,26 @@ const CareerDetail = () => {
     const [loadingExplanation, setLoadingExplanation] = useState(false);
     const [skillGapData, setSkillGapData] = useState<any>(null);
     const [loadingSkillGap, setLoadingSkillGap] = useState(false);
+    const [assessmentContext, setAssessmentContext] = useState<any>(null);
+    const [apiCareerData, setApiCareerData] = useState<any>(null);
+
+    const careerNameFromRoute = decodeURIComponent(id || 'Software Engineer');
 
     // Mock data - replace with API call
     const career = {
         id: 1,
-        title: 'Software Engineer',
+        title: apiCareerData?.title || careerNameFromRoute,
         icon: '💻',
-        match: 92,
+        match: assessmentContext?.career_context?.user_match_percentage ?? 92,
         rating: 4.5,
-        description: 'Design, develop, and maintain software applications. Work with various programming languages and frameworks to create solutions for businesses and consumers.',
-        avgSalary: '₹12 LPA',
-        salaryRange: '₹6-25 LPA',
-        demand: 'High',
+        description: apiCareerData?.description || 'Design, develop, and maintain software applications. Work with various programming languages and frameworks to create solutions for businesses and consumers.',
+        avgSalary: apiCareerData?.avgSalary || '₹12 LPA',
+        salaryRange: apiCareerData?.salaryRange || '₹6-25 LPA',
+        demand: apiCareerData?.demand || 'High',
         growth: '+15% YoY',
         workEnvironment: 'Office / Remote',
 
-        salaryData: [
+        salaryData: apiCareerData?.salaryData || [
             { exp: '0-2 years', min: 600000, avg: 800000, max: 1200000 },
             { exp: '2-5 years', min: 1000000, avg: 1500000, max: 2000000 },
             { exp: '5-8 years', min: 1800000, avg: 2200000, max: 3000000 },
@@ -66,7 +72,7 @@ const CareerDetail = () => {
             'Stay updated with latest technologies'
         ],
 
-        requiredSkills: [
+        requiredSkills: apiCareerData?.requiredSkills || [
             { name: 'Python', level: 85, category: 'Programming' },
             { name: 'JavaScript', level: 80, category: 'Programming' },
             { name: 'Data Structures', level: 90, category: 'Core' },
@@ -76,7 +82,7 @@ const CareerDetail = () => {
             { name: 'Communication', level: 75, category: 'Soft Skills' }
         ],
 
-        education: [
+        education: apiCareerData?.education || [
             {
                 degree: 'B.Tech Computer Science',
                 rating: 5,
@@ -120,6 +126,71 @@ const CareerDetail = () => {
         ]
     };
 
+    useEffect(() => {
+        const fetchCareerContext = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const [contextResponse, detailResponse] = await Promise.all([
+                    axios.get(`${API_URL}/assessment/context/${encodeURIComponent(careerNameFromRoute)}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }),
+                    axios.get(`${API_URL}/careers/detail/${encodeURIComponent(careerNameFromRoute)}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    })
+                ]);
+
+                setAssessmentContext(contextResponse.data);
+                setApiCareerData(detailResponse.data);
+            } catch (error) {
+                console.error('Error fetching career context/detail:', error);
+            }
+        };
+
+        fetchCareerContext();
+    }, [careerNameFromRoute]);
+
+    useEffect(() => {
+        const fetchSkillGapViewData = async () => {
+            try {
+                setLoadingSkillGap(true);
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const response = await axios.get(
+                    `${API_URL}/assessment/skill-gaps/${encodeURIComponent(careerNameFromRoute)}`,
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                const gaps = response.data?.skill_gaps || [];
+                const mapSkill = (skill: any) => ({
+                    skill_name: skill.skill,
+                    category: skill.category || 'general',
+                    required_level: skill.level || 0,
+                    user_level: skill.level ? Math.max(1, skill.level - Math.min(4, skill.level >= 80 ? 2 : 1)) : 0,
+                    gap: skill.level ? Math.min(5, (skill.level / 20)) : 0,
+                    status: skill.priority === 'high' ? 'weak' : 'medium'
+                });
+
+                setSkillGapData({
+                    career_name: careerNameFromRoute,
+                    strong_skills: [],
+                    medium_skills: gaps.filter((skill: any) => skill.priority !== 'high').map(mapSkill),
+                    weak_or_missing_skills: gaps.filter((skill: any) => skill.priority === 'high').map(mapSkill),
+                    learning_priority_order: gaps.slice(0, 5).map(mapSkill),
+                    overall_readiness: response.data?.total_gaps ? Math.max(20, 100 - response.data.total_gaps * 12) : 50
+                });
+            } catch (error) {
+                console.error('Error fetching skill gap view data:', error);
+            } finally {
+                setLoadingSkillGap(false);
+            }
+        };
+
+        fetchSkillGapViewData();
+    }, [careerNameFromRoute]);
+
     const formatCurrency = (value: number) => {
         return `₹${(value / 100000).toFixed(1)}L`;
     };
@@ -137,7 +208,7 @@ const CareerDetail = () => {
                 }
 
                 const response = await axios.get(
-                    `http://localhost:5000/api/predict/explain?career=${encodeURIComponent(career.title)}`,
+                    `${API_URL}/predict/explain?career=${encodeURIComponent(career.title)}`,
                     {
                         headers: {
                             'Authorization': `Bearer ${token}`
@@ -155,39 +226,6 @@ const CareerDetail = () => {
         };
 
         fetchExplanation();
-    }, [career.title]);
-
-    // Fetch skill gap data
-    useEffect(() => {
-        const fetchSkillGap = async () => {
-            try {
-                setLoadingSkillGap(true);
-                const token = localStorage.getItem('token');
-
-                if (!token) {
-                    console.log('No token found, skipping skill gap fetch');
-                    return;
-                }
-
-                const response = await axios.get(
-                    `http://localhost:5000/api/skills/gap?career=${encodeURIComponent(career.title)}`,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    }
-                );
-
-                setSkillGapData(response.data);
-            } catch (error) {
-                console.error('Error fetching skill gap:', error);
-                // Silently fail - skill gap is optional
-            } finally {
-                setLoadingSkillGap(false);
-            }
-        };
-
-        fetchSkillGap();
     }, [career.title]);
 
     return (

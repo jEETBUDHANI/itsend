@@ -75,19 +75,20 @@ def login():
         
         if not user:
             print(f"[LOGIN] User with email '{email}' not found in database")
-            # List all users for debugging
-            all_users = User.query.all()
-            print(f"[LOGIN] Total users in database: {len(all_users)}")
-            for u in all_users:
-                print(f"[LOGIN]   - {u.email}")
-            return jsonify({'error': 'Invalid email or password'}), 401
+            return jsonify({
+                'error': 'Account not found. Please sign up first.',
+                'code': 'ACCOUNT_NOT_FOUND'
+            }), 401
         
         # Check password
         pwd_check = user.check_password(password)
         print(f"[LOGIN] Password check result: {pwd_check}")
         
         if not pwd_check:
-            return jsonify({'error': 'Invalid email or password'}), 401
+            return jsonify({
+                'error': 'Incorrect password. Please try again.',
+                'code': 'INVALID_PASSWORD'
+            }), 401
         
         # Create access token
         access_token = create_access_token(identity=str(user.id))

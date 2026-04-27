@@ -1,546 +1,106 @@
-/* ═════════════════════════════════════════════════════════════ */
-/* TRAVELING LINE ANIMATIONS (Animated gradient border line) */
-/* ═════════════════════════════════════════════════════════════ */
-
-@keyframes travelingLineBlue {
+@keyframes borderBeamTravel {
   0% {
-    background: conic-gradient(
-      from 0deg,
-      rgba(59, 130, 246, 1) 0deg,
-      rgba(96, 165, 250, 1) 30deg,
-      rgba(59, 130, 246, 0.3) 60deg,
-      rgba(59, 130, 246, 0.1) 90deg,
-      transparent 120deg,
-      transparent 360deg
-    );
+    background-image: linear-gradient(90deg, transparent, var(--line-color), transparent);
+    background-size: 34% 2px;
+    background-position: 0% 0%;
   }
-  100% {
-    background: conic-gradient(
-      from 360deg,
-      rgba(59, 130, 246, 1) 360deg,
-      rgba(96, 165, 250, 1) 390deg,
-      rgba(59, 130, 246, 0.3) 420deg,
-      rgba(59, 130, 246, 0.1) 450deg,
-      transparent 480deg,
-      transparent 720deg
-    );
-  }
-}
-
-@keyframes travelingLinePurple {
-  0% {
-    background: conic-gradient(
-      from 0deg,
-      rgba(168, 85, 247, 1) 0deg,
-      rgba(192, 132, 252, 1) 30deg,
-      rgba(168, 85, 247, 0.3) 60deg,
-      rgba(168, 85, 247, 0.1) 90deg,
-      transparent 120deg,
-      transparent 360deg
-    );
-  }
-  100% {
-    background: conic-gradient(
-      from 360deg,
-      rgba(168, 85, 247, 1) 360deg,
-      rgba(192, 132, 252, 1) 390deg,
-      rgba(168, 85, 247, 0.3) 420deg,
-      rgba(168, 85, 247, 0.1) 450deg,
-      transparent 480deg,
-      transparent 720deg
-    );
-  }
-}
-
-@keyframes travelingLineGreen {
-  0% {
-    background: conic-gradient(
-      from 0deg,
-      rgba(34, 197, 94, 1) 0deg,
-      rgba(74, 222, 128, 1) 30deg,
-      rgba(34, 197, 94, 0.3) 60deg,
-      rgba(34, 197, 94, 0.1) 90deg,
-      transparent 120deg,
-      transparent 360deg
-    );
-  }
-  100% {
-    background: conic-gradient(
-      from 360deg,
-      rgba(34, 197, 94, 1) 360deg,
-      rgba(74, 222, 128, 1) 390deg,
-      rgba(34, 197, 94, 0.3) 420deg,
-      rgba(34, 197, 94, 0.1) 450deg,
-      transparent 480deg,
-      transparent 720deg
-    );
-  }
-}
-
-@keyframes travelingLineCyan {
-  0% {
-    background: conic-gradient(
-      from 0deg,
-      rgba(34, 211, 238, 1) 0deg,
-      rgba(165, 243, 252, 1) 30deg,
-      rgba(34, 211, 238, 0.3) 60deg,
-      rgba(34, 211, 238, 0.1) 90deg,
-      transparent 120deg,
-      transparent 360deg
-    );
-  }
-  100% {
-    background: conic-gradient(
-      from 360deg,
-      rgba(34, 211, 238, 1) 360deg,
-      rgba(165, 243, 252, 1) 390deg,
-      rgba(34, 211, 238, 0.3) 420deg,
-      rgba(34, 211, 238, 0.1) 450deg,
-      transparent 480deg,
-      transparent 720deg
-    );
-  }
-}
-
-@keyframes travelingLineYellow {
-  0% {
-    background: conic-gradient(
-      from 0deg,
-      rgba(234, 179, 8, 1) 0deg,
-      rgba(253, 224, 71, 1) 30deg,
-      rgba(234, 179, 8, 0.3) 60deg,
-      rgba(234, 179, 8, 0.1) 90deg,
-      transparent 120deg,
-      transparent 360deg
-    );
-  }
-  100% {
-    background: conic-gradient(
-      from 360deg,
-      rgba(234, 179, 8, 1) 360deg,
-      rgba(253, 224, 71, 1) 390deg,
-      rgba(234, 179, 8, 0.3) 420deg,
-      rgba(234, 179, 8, 0.1) 450deg,
-      transparent 480deg,
-      transparent 720deg
-    );
-  }
-}
-
-@keyframes travelingLineBlue {
-  0% {
-    background: conic-gradient(
-      from 0deg,
-      rgba(59, 130, 246, 1) 0deg,
-      rgba(96, 165, 250, 1) 30deg,
-      rgba(59, 130, 246, 0.3) 60deg,
-      rgba(59, 130, 246, 0.1) 90deg,
-      transparent 120deg,
-      transparent 360deg
-    );
-  }
-  100% {
-    background: conic-gradient(
-      from 360deg,
-      rgba(59, 130, 246, 1) 360deg,
-      rgba(96, 165, 250, 1) 390deg,
-      rgba(59, 130, 246, 0.3) 420deg,
-      rgba(59, 130, 246, 0.1) 450deg,
-      transparent 480deg,
-      transparent 720deg
-    );
-  }
-}
-
-/* BLUE TRAVELING BORDER ANIMATION */
-@keyframes travelingBorderBlue {
-  0% {
-    box-shadow: 
-      -8px 0px 20px rgba(59, 130, 246, 0.8),
-      0 0 30px rgba(96, 165, 250, 0.3);
+  24.99% {
+    background-image: linear-gradient(90deg, transparent, var(--line-color), transparent);
+    background-size: 34% 2px;
+    background-position: 100% 0%;
   }
   25% {
-    box-shadow: 
-      0px -8px 20px rgba(59, 130, 246, 0.8),
-      0 0 30px rgba(96, 165, 250, 0.3);
+    background-image: linear-gradient(180deg, transparent, var(--line-color), transparent);
+    background-size: 2px 34%;
+    background-position: 100% 0%;
+  }
+  49.99% {
+    background-image: linear-gradient(180deg, transparent, var(--line-color), transparent);
+    background-size: 2px 34%;
+    background-position: 100% 100%;
   }
   50% {
-    box-shadow: 
-      8px 0px 20px rgba(59, 130, 246, 0.8),
-      0 0 30px rgba(96, 165, 250, 0.3);
+    background-image: linear-gradient(270deg, transparent, var(--line-color), transparent);
+    background-size: 34% 2px;
+    background-position: 100% 100%;
+  }
+  74.99% {
+    background-image: linear-gradient(270deg, transparent, var(--line-color), transparent);
+    background-size: 34% 2px;
+    background-position: 0% 100%;
   }
   75% {
-    box-shadow: 
-      0px 8px 20px rgba(59, 130, 246, 0.8),
-      0 0 30px rgba(96, 165, 250, 0.3);
+    background-image: linear-gradient(0deg, transparent, var(--line-color), transparent);
+    background-size: 2px 34%;
+    background-position: 0% 100%;
   }
   100% {
-    box-shadow: 
-      -8px 0px 20px rgba(59, 130, 246, 0.8),
-      0 0 30px rgba(96, 165, 250, 0.3);
+    background-image: linear-gradient(0deg, transparent, var(--line-color), transparent);
+    background-size: 2px 34%;
+    background-position: 0% 0%;
   }
 }
 
-/* PURPLE TRAVELING BORDER ANIMATION */
-@keyframes travelingBorderPurple {
-  0% {
-    box-shadow: 
-      -8px 0px 20px rgba(168, 85, 247, 0.8),
-      0 0 30px rgba(192, 132, 252, 0.3);
-  }
-  25% {
-    box-shadow: 
-      0px -8px 20px rgba(168, 85, 247, 0.8),
-      0 0 30px rgba(192, 132, 252, 0.3);
-  }
-  50% {
-    box-shadow: 
-      8px 0px 20px rgba(168, 85, 247, 0.8),
-      0 0 30px rgba(192, 132, 252, 0.3);
-  }
-  75% {
-    box-shadow: 
-      0px 8px 20px rgba(168, 85, 247, 0.8),
-      0 0 30px rgba(192, 132, 252, 0.3);
-  }
-  100% {
-    box-shadow: 
-      -8px 0px 20px rgba(168, 85, 247, 0.8),
-      0 0 30px rgba(192, 132, 252, 0.3);
-  }
-}
-
-/* GREEN TRAVELING BORDER ANIMATION */
-@keyframes travelingBorderGreen {
-  0% {
-    box-shadow: 
-      -8px 0px 20px rgba(34, 197, 94, 0.8),
-      0 0 30px rgba(74, 222, 128, 0.3);
-  }
-  25% {
-    box-shadow: 
-      0px -8px 20px rgba(34, 197, 94, 0.8),
-      0 0 30px rgba(74, 222, 128, 0.3);
-  }
-  50% {
-    box-shadow: 
-      8px 0px 20px rgba(34, 197, 94, 0.8),
-      0 0 30px rgba(74, 222, 128, 0.3);
-  }
-  75% {
-    box-shadow: 
-      0px 8px 20px rgba(34, 197, 94, 0.8),
-      0 0 30px rgba(74, 222, 128, 0.3);
-  }
-  100% {
-    box-shadow: 
-      -8px 0px 20px rgba(34, 197, 94, 0.8),
-      0 0 30px rgba(74, 222, 128, 0.3);
-  }
-}
-
-/* CYAN TRAVELING BORDER ANIMATION */
-@keyframes travelingBorderCyan {
-  0% {
-    box-shadow: 
-      -8px 0px 20px rgba(34, 211, 238, 0.8),
-      0 0 30px rgba(165, 243, 252, 0.3);
-  }
-  25% {
-    box-shadow: 
-      0px -8px 20px rgba(34, 211, 238, 0.8),
-      0 0 30px rgba(165, 243, 252, 0.3);
-  }
-  50% {
-    box-shadow: 
-      8px 0px 20px rgba(34, 211, 238, 0.8),
-      0 0 30px rgba(165, 243, 252, 0.3);
-  }
-  75% {
-    box-shadow: 
-      0px 8px 20px rgba(34, 211, 238, 0.8),
-      0 0 30px rgba(165, 243, 252, 0.3);
-  }
-  100% {
-    box-shadow: 
-      -8px 0px 20px rgba(34, 211, 238, 0.8),
-      0 0 30px rgba(165, 243, 252, 0.3);
-  }
-}
-
-/* YELLOW TRAVELING BORDER ANIMATION */
-@keyframes travelingBorderYellow {
-  0% {
-    box-shadow: 
-      -8px 0px 20px rgba(234, 179, 8, 0.8),
-      0 0 30px rgba(253, 224, 71, 0.3);
-  }
-  25% {
-    box-shadow: 
-      0px -8px 20px rgba(234, 179, 8, 0.8),
-      0 0 30px rgba(253, 224, 71, 0.3);
-  }
-  50% {
-    box-shadow: 
-      8px 0px 20px rgba(234, 179, 8, 0.8),
-      0 0 30px rgba(253, 224, 71, 0.3);
-  }
-  75% {
-    box-shadow: 
-      0px 8px 20px rgba(234, 179, 8, 0.8),
-      0 0 30px rgba(253, 224, 71, 0.3);
-  }
-  100% {
-    box-shadow: 
-      -8px 0px 20px rgba(234, 179, 8, 0.8),
-      0 0 30px rgba(253, 224, 71, 0.3);
-  }
-}
-
-/* Blue Border - Unselected */
-.cardBlueBorder {
-  position: relative;
-  animation: travelingBorderBlue 4s linear infinite;
-  transition: all 0.3s ease;
-  border: 6px solid transparent;
-  background-clip: padding-box;
-}
-
-.cardBlueBorder::before {
-  content: '';
-  position: absolute;
-  inset: -6px;
-  border-radius: inherit;
-  padding: 6px;
-  background: conic-gradient(
-    from 0deg,
-    rgba(59, 130, 246, 1) 0deg,
-    rgba(96, 165, 250, 0.8) 45deg,
-    rgba(59, 130, 246, 0.3) 90deg,
-    transparent 180deg,
-    transparent 360deg
-  );
-  animation: travelingLineBlue 3s linear infinite;
-  pointer-events: none;
-  border-radius: 1rem;
-}
-
-.cardBlueBorder > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Purple Border - Unselected */
-.cardPurpleBorder {
-  position: relative;
-  animation: travelingBorderPurple 4s linear infinite;
-  transition: all 0.3s ease;
-  border: 6px solid transparent;
-  background-clip: padding-box;
-}
-
-.cardPurpleBorder::before {
-  content: '';
-  position: absolute;
-  inset: -6px;
-  border-radius: inherit;
-  padding: 6px;
-  background: conic-gradient(
-    from 0deg,
-    rgba(168, 85, 247, 1) 0deg,
-    rgba(192, 132, 252, 0.8) 45deg,
-    rgba(168, 85, 247, 0.3) 90deg,
-    transparent 180deg,
-    transparent 360deg
-  );
-  animation: travelingLinePurple 3s linear infinite;
-  pointer-events: none;
-  border-radius: 1rem;
-}
-
-.cardPurpleBorder > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Green Border - Unselected */
-.cardGreenBorder {
-  position: relative;
-  animation: travelingBorderGreen 4s linear infinite;
-  transition: all 0.3s ease;
-  border: 6px solid transparent;
-  background-clip: padding-box;
-}
-
-.cardGreenBorder::before {
-  content: '';
-  position: absolute;
-  inset: -6px;
-  border-radius: inherit;
-  padding: 6px;
-  background: conic-gradient(
-    from 0deg,
-    rgba(34, 197, 94, 1) 0deg,
-    rgba(74, 222, 128, 0.8) 45deg,
-    rgba(34, 197, 94, 0.3) 90deg,
-    transparent 180deg,
-    transparent 360deg
-  );
-  animation: travelingLineGreen 3s linear infinite;
-  pointer-events: none;
-  border-radius: 1rem;
-}
-
-.cardGreenBorder > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Cyan Border - Unselected */
-.cardCyanBorder {
-  position: relative;
-  animation: travelingBorderCyan 4s linear infinite;
-  transition: all 0.3s ease;
-  border: 6px solid transparent;
-  background-clip: padding-box;
-}
-
-.cardCyanBorder::before {
-  content: '';
-  position: absolute;
-  inset: -6px;
-  border-radius: inherit;
-  padding: 6px;
-  background: conic-gradient(
-    from 0deg,
-    rgba(34, 211, 238, 1) 0deg,
-    rgba(165, 243, 252, 0.8) 45deg,
-    rgba(34, 211, 238, 0.3) 90deg,
-    transparent 180deg,
-    transparent 360deg
-  );
-  pointer-events: none;
-  border-radius: 1rem;
-}
-
-.cardCyanBorder > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Yellow Border - Unselected */
+/* Shared thin edge-travel beam */
+.cardBlueBorder,
+.cardPurpleBorder,
+.cardGreenBorder,
+.cardCyanBorder,
 .cardYellowBorder {
   position: relative;
-  animation: travelingBorderYellow 4s linear infinite;
-  transition: all 0.3s ease;
-  border: 6px solid transparent;
-  background-clip: padding-box;
-}
-
-.cardYellowBorder::before {
-  content: '';
-  position: absolute;
-  inset: -6px;
-  border-radius: inherit;
-  padding: 6px;
-  background: conic-gradient(
-    from 0deg,
-    rgba(234, 179, 8, 1) 0deg,
-    rgba(253, 224, 71, 0.8) 45deg,
-    rgba(234, 179, 8, 0.3) 90deg,
-    transparent 180deg,
-    transparent 360deg
-  );
-  pointer-events: none;
+  isolation: isolate;
   border-radius: 1rem;
 }
 
-.cardYellowBorder > * {
-  position: relative;
-  z-index: 1;
+.cardBlueBorder::before,
+.cardPurpleBorder::before,
+.cardGreenBorder::before,
+.cardCyanBorder::before,
+.cardYellowBorder::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background-repeat: no-repeat;
+  animation: borderBeamTravel 2.8s linear infinite;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.92;
 }
 
-/* SELECTED/HOVERED STATE - BLUE */
-.cardBlueBorder.selected,
-.cardBlueBorder:hover {
-  transform: scale(1.05);
-  animation: travelingBorderBlue 3s linear infinite;
-  box-shadow: 
-    -12px 0px 40px rgba(59, 130, 246, 1),
-    8px 0px 40px rgba(96, 165, 250, 0.8),
-    0 0 60px rgba(59, 130, 246, 0.6),
-    0 0 80px rgba(96, 165, 250, 0.3) !important;
-}
-
-.cardBlueBorder.selected::before,
-.cardBlueBorder:hover::before {
-  animation: travelingLineBlue 2s linear infinite !important;
-}
-
-/* SELECTED/HOVERED STATE - PURPLE */
-.cardPurpleBorder.selected,
-.cardPurpleBorder:hover {
-  transform: scale(1.05);
-  animation: travelingBorderPurple 3s linear infinite;
-  box-shadow: 
-    -12px 0px 40px rgba(168, 85, 247, 1),
-    8px 0px 40px rgba(192, 132, 252, 0.8),
-    0 0 60px rgba(168, 85, 247, 0.6),
-    0 0 80px rgba(192, 132, 252, 0.3) !important;
-}
-
-.cardPurpleBorder.selected::before,
-.cardPurpleBorder:hover::before {
-  animation: travelingLinePurple 2s linear infinite !important;
-}
-
-/* SELECTED/HOVERED STATE - GREEN */
-.cardGreenBorder.selected,
-.cardGreenBorder:hover {
-  transform: scale(1.05);
-  animation: travelingBorderGreen 3s linear infinite;
-  box-shadow: 
-    -12px 0px 40px rgba(34, 197, 94, 1),
-    8px 0px 40px rgba(74, 222, 128, 0.8),
-    0 0 60px rgba(34, 197, 94, 0.6),
-    0 0 80px rgba(74, 222, 128, 0.3) !important;
-}
-
-.cardGreenBorder.selected::before,
-.cardGreenBorder:hover::before {
-  animation: travelingLineGreen 2s linear infinite !important;
-}
-
-/* SELECTED/HOVERED STATE - CYAN */
-.cardCyanBorder.selected,
-.cardCyanBorder:hover {
-  transform: scale(1.05);
-  animation: travelingBorderCyan 3s linear infinite;
-  box-shadow: 
-    -12px 0px 40px rgba(34, 211, 238, 1),
-    8px 0px 40px rgba(165, 243, 252, 0.8),
-    0 0 60px rgba(34, 211, 238, 0.6),
-    0 0 80px rgba(165, 243, 252, 0.3) !important;
-}
-
-.cardCyanBorder.selected::before,
-.cardCyanBorder:hover::before {
-  animation: travelingLineCyan 2s linear infinite !important;
-}
-
-/* SELECTED/HOVERED STATE - YELLOW */
-.cardYellowBorder.selected,
-.cardYellowBorder:hover {
-  transform: scale(1.05);
-  animation: travelingBorderYellow 3s linear infinite;
-  box-shadow: 
-    -12px 0px 40px rgba(234, 179, 8, 1),
-    8px 0px 40px rgba(253, 224, 71, 0.8),
-    0 0 60px rgba(234, 179, 8, 0.6),
-    0 0 80px rgba(253, 224, 71, 0.3) !important;
-}
-
-.cardYellowBorder.selected::before,
+/* Hover only: faster + brighter */
+.cardBlueBorder:hover::before,
+.cardPurpleBorder:hover::before,
+.cardGreenBorder:hover::before,
+.cardCyanBorder:hover::before,
 .cardYellowBorder:hover::before {
-  animation: travelingLineYellow 2s linear infinite !important;
+  animation-duration: 1.4s;
+  opacity: 1;
+}
+
+/* Keep selected class available but without extra effect */
+.selected {}
+
+/* Per-card beam color */
+.cardBlueBorder {
+  --line-color: #3b82f6;
+}
+
+.cardPurpleBorder {
+  --line-color: #a855f7;
+}
+
+.cardGreenBorder {
+  --line-color: #22c55e;
+}
+
+.cardCyanBorder {
+  --line-color: #22d3ee;
+}
+
+.cardYellowBorder {
+  --line-color: #eab308;
 }

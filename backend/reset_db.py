@@ -5,18 +5,37 @@ This will delete the old database and create a fresh one with all the new fields
 import os
 import sys
 
-# Get the path to the database
-db_path = os.path.join(os.path.dirname(__file__), 'career_system.db')
+from app import create_app, db
+
+
+def _resolve_active_sqlite_path():
+    """Resolve the real SQLite file path used by SQLAlchemy in this app."""
+    app = create_app()
+    with app.app_context():
+        database_path = db.engine.url.database
+    return os.path.abspath(database_path) if database_path else None
 
 print("\n🔧 Database Reset Script\n")
 print("=" * 50)
 
+db_path = _resolve_active_sqlite_path()
+if not db_path:
+    print("❌ Could not resolve active database path")
+    sys.exit(1)
+
+print(f"Active database path: {db_path}")
+
 # Check if database exists
+deleted_file = False
 if os.path.exists(db_path):
     print(f"Found existing database: {db_path}")
     print("Deleting old database...")
-    os.remove(db_path)
-    print("✓ Old database deleted")
+    try:
+        os.remove(db_path)
+        deleted_file = True
+        print("✓ Old database deleted")
+    except PermissionError:
+        print("⚠ Database file is currently in use. Falling back to in-place table reset.")
 else:
     print("No existing database found")
 
@@ -24,10 +43,11 @@ else:
 print("\nCreating fresh database with new schema...")
 
 try:
-    from app import create_app, db
-    
     app = create_app()
     with app.app_context():
+        if not deleted_file and os.path.exists(db_path):
+            db.drop_all()
+            print("✓ Existing tables dropped")
         db.create_all()
         print("✓ New database created successfully!")
         print("\nNew tables created:")

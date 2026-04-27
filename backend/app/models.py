@@ -26,6 +26,8 @@ class User(db.Model):
     
     # Legacy academic fields (for backward compatibility)
     academic_stage = db.Column(db.String(50))  # '9-10', '11-12', 'college', 'working'
+    education_module = db.Column(db.String(30))  # 'class10', 'class12', 'college'
+    module_goal = db.Column(db.String(255))
     current_stream = db.Column(db.String(50))  # 'Science', 'Commerce', 'Arts'
     target_exams = db.Column(db.JSON)  # ['JEE', 'NEET', 'CUET', etc.]
     class_grade = db.Column(db.String(20))  # '9', '10', '11', '12', '1st_year', etc.
@@ -36,6 +38,9 @@ class User(db.Model):
     holistic_profile = db.relationship('HolisticProfile', backref='user', uselist=False)
     feedback = db.relationship('CareerFeedback', backref='user', lazy=True)
     roadmaps = db.relationship('Roadmap', backref='user', lazy=True)
+    module_assessments = db.relationship('ModuleAssessmentResult', backref='user', lazy=True)
+    module_recommendations = db.relationship('ModuleRecommendation', backref='user', lazy=True)
+    module_roadmaps = db.relationship('ModuleRoadmap', backref='user', lazy=True)
     job_readiness_scores = db.relationship('JobReadinessScore', backref='user', lazy=True)
     action_plans = db.relationship('ActionPlan', backref='user', lazy=True)
     placement_prep_attempts = db.relationship('PlacementPrepAttempt', backref='user', lazy=True)
@@ -61,6 +66,8 @@ class User(db.Model):
             'current_skills': self.current_skills or [],
             'career_interests': self.career_interests or [],
             'academic_stage': self.academic_stage,
+            'education_module': self.education_module,
+            'module_goal': self.module_goal,
             'current_stream': self.current_stream,
             'target_exams': self.target_exams or [],
             'class_grade': self.class_grade,
@@ -106,6 +113,84 @@ class Assessment(db.Model):
             'assessment_type': self.assessment_type,
             'scores': self.scores,
             'completed_at': self.completed_at.isoformat()
+        }
+
+
+class ModuleAssessmentResult(db.Model):
+    """Education-stage-specific assessment records."""
+    __tablename__ = 'module_assessment_results'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    module_type = db.Column(db.String(30), nullable=False)  # class10 | class12 | college
+    assessment_key = db.Column(db.String(80), nullable=False)
+    schema_version = db.Column(db.String(20), default='v1')
+    input_payload = db.Column(db.JSON, nullable=False)
+    score_payload = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'module_type': self.module_type,
+            'assessment_key': self.assessment_key,
+            'schema_version': self.schema_version,
+            'input_payload': self.input_payload,
+            'score_payload': self.score_payload,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+        }
+
+
+class ModuleRecommendation(db.Model):
+    """Module-specific recommendation outputs and metadata."""
+    __tablename__ = 'module_recommendations'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    module_type = db.Column(db.String(30), nullable=False)
+    output_type = db.Column(db.String(80), nullable=False)
+    recommendation_payload = db.Column(db.JSON, nullable=False)
+    confidence_score = db.Column(db.Float, default=0.0)
+    generated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'module_type': self.module_type,
+            'output_type': self.output_type,
+            'recommendation_payload': self.recommendation_payload,
+            'confidence_score': self.confidence_score,
+            'generated_at': self.generated_at.isoformat() if self.generated_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+        }
+
+
+class ModuleRoadmap(db.Model):
+    """Separate roadmap templates and generated plans per module."""
+    __tablename__ = 'module_roadmaps'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    module_type = db.Column(db.String(30), nullable=False)
+    roadmap_payload = db.Column(db.JSON, nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'module_type': self.module_type,
+            'roadmap_payload': self.roadmap_payload,
+            'is_active': self.is_active,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
         }
 
 

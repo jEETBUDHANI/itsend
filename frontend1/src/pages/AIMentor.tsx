@@ -8,7 +8,7 @@ import axios from 'axios';
 import { useAuth } from '@/contexts/AuthContext';
 import { hasCompletedAllAssessments } from '@/lib/assessmentUtils';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}`;
 
 interface Message {
     role: 'user' | 'assistant';
@@ -44,7 +44,19 @@ export default function AIMentor() {
 
     useEffect(() => {
         if (!user) return;
-        setMentorUnlocked(hasCompletedAllAssessments(user.id));
+        // Class 12 and College module users unlock the mentor after their module assessment
+        const moduleKey = (user as any).education_module;
+        if (moduleKey === 'class12') {
+            const class12Done = !!(
+                localStorage.getItem('class12_results_snapshot') ||
+                localStorage.getItem('class12_selected_career')
+            );
+            setMentorUnlocked(class12Done);
+        } else if (moduleKey === 'college') {
+            setMentorUnlocked(true); // College users always have access
+        } else {
+            setMentorUnlocked(hasCompletedAllAssessments(user.id));
+        }
     }, [user]);
 
     if (!mentorUnlocked) {

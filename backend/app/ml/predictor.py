@@ -1,6 +1,5 @@
 import joblib
 import numpy as np
-import pandas as pd
 import os
 
 class MLPredictor:
@@ -70,14 +69,11 @@ class MLPredictor:
         Predict courses based on personality type
         Returns: List of (course_name, confidence) tuples
         """
-        # Create random student profile (as in original code)
-        student = pd.DataFrame(
-            np.random.randint(0, 2, size=(1, len(self.feature_columns))),
-            columns=self.feature_columns
-        )
+        # Create random student feature vector (same shape expected by selector)
+        student = np.random.randint(0, 2, size=(1, len(self.feature_columns)))
         
         # Apply feature selection
-        student_selected = self.selector.transform(student.values)
+        student_selected = self.selector.transform(student)
         
         # Get predictions
         probabilities = self.rf_model.predict_proba(student_selected)[0]

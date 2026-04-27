@@ -1,5 +1,5 @@
 """Routes for reports, career library, and AI mentor"""
-from flask import Blueprint, request, jsonify, send_file
+from flask import Blueprint, request, jsonify, send_file, Response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import User, HolisticProfile, TestResult
 from app.services.report_generator import CareerReportGenerator
@@ -106,7 +106,55 @@ def get_career_detail(career_name):
         return jsonify({'error': str(e)}), 500
 
 
+@services_bp.route('/mentor/chat/stream', methods=['POST'])
+@jwt_required()
+def chat_with_mentor_stream():
+    """Streaming chat with AI career mentor"""
+    try:
+        user_id = int(get_jwt_identity())
+        data = request.get_json()
+        
+        if not data or not data.get('message'):
+            return jsonify({'error': 'Message is required'}), 400
+        
+        message = data['message']
+        history = data.get('history', [])
+        
+        # Build comprehensive user context (similar to non-streaming)
+        user_context = {}
+        user = User.query.get(user_id)
+        if user:
+            user_context['name'] = user.full_name
+            user_context['academic_stage'] = user.academic_stage
+        
+        holistic = HolisticProfile.query.filter_by(user_id=user_id).first()
+        if holistic:
+            user_context['clarity_score'] = holistic.clarity_score
+        
+        test_result = TestResult.query.filter_by(user_id=user_id).order_by(TestResult.created_at.desc()).first()
+        if test_result:
+            user_context['personality_type'] = test_result.personality_type
+            if test_result.recommendations:
+                user_context['recommended_careers'] = test_result.recommendations.get('mcq_careers', [])[:5]
+
+        # Return a streaming response
+        return Response(
+            ai_mentor.stream_chat(user_id, message, user_context, history=history),
+            mimetype='text/event-stream',
+            headers={
+                'Cache-Control': 'no-cache',
+                'Transfer-Encoding': 'chunked',
+                'Connection': 'keep-alive'
+            }
+        )
+        
+    except Exception as e:
+        print(f"Streaming Mentor chat error: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
 @services_bp.route('/mentor/chat', methods=['POST'])
+
 @jwt_required()
 def chat_with_mentor():
     """Chat with AI career mentor with full user context"""

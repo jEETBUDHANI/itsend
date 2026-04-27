@@ -210,7 +210,7 @@ export default function PersonalityTest() {
       try {
         const token = localStorage.getItem('token');
         if (token) {
-          await fetch('http://localhost:5000/api/assessment/personality', {
+          await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/assessment/personality`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

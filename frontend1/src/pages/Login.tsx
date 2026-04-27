@@ -5,15 +5,39 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, signup } = useAuth();
 
   const handleSubmitSuccess = () => {
-    // Navigate to dashboard after successful login
-    navigate('/dashboard');
+    // Navigation is handled in handleLogin after successful login
   };
 
   const handleLogin = async (email: string, password: string) => {
-    await login(email, password);
+    try {
+      const user = await login(email, password);
+      // After successful login, handle navigation based on user state
+      if (!user.education_module || !user.academic_stage) {
+        navigate('/onboarding');
+      } else {
+        navigate('/dashboard');
+      }
+    } catch (error: any) {
+      console.error('Login error:', error?.response?.data?.error || error?.message || 'Unknown login error');
+      throw error; // Re-throw so AuthComponent can display error
+    }
+  };
+
+  const handleSignup = async (email: string, password: string, fullName: string) => {
+    try {
+      const user = await signup(email, password, fullName);
+      if (!user.education_module || !user.academic_stage) {
+        navigate('/onboarding');
+      } else {
+        navigate('/dashboard');
+      }
+    } catch (error: any) {
+      console.error('Signup error:', error?.response?.data?.error || error?.message || 'Unknown signup error');
+      throw error;
+    }
   };
 
   const LoginLogo = () => (
@@ -29,6 +53,7 @@ const Login = () => {
       onSubmitSuccess={handleSubmitSuccess}
       mode="signin"
       onLogin={handleLogin}
+      onSignup={handleSignup}
     />
   );
 };

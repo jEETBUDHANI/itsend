@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Boxes } from '@/components/ui/background-boxes';
 import { useAuth } from '@/contexts/AuthContext';
-import { roadmapsApi } from '@/services/api';
+import { modulesApi, roadmapsApi, userApi } from '@/services/api';
 import styles from './Onboarding.module.css';
 import {
     GraduationCap,
@@ -43,6 +43,14 @@ const Onboarding = () => {
 
     const handleComplete = async () => {
         const storageKey = user ? `onboarding_${user.id}` : 'onboarding';
+        const normalizedEducationLevel =
+            data.academicStage === '10th_pass'
+                ? '10'
+                : data.academicStage === '12th_pass'
+                    ? '12'
+                    : data.academicStage === 'college'
+                        ? 'college'
+                        : undefined;
         const backendPayload = {
             academic_stage:
                 data.academicStage === '10th_pass'
@@ -72,9 +80,23 @@ const Onboarding = () => {
                                 : []
         };
 
+        const moduleKey =
+            data.academicStage === '10th_pass'
+                ? 'class10'
+                : data.academicStage === '12th_pass'
+                    ? 'class12'
+                    : 'college';
+
         try {
             if (user) {
                 await roadmapsApi.updateStage(backendPayload);
+                await userApi.completeOnboarding({
+                    education_level: normalizedEducationLevel,
+                    education_module: moduleKey,
+                    stream: data.stream || undefined,
+                    career_interests: data.careerInterests
+                });
+                await modulesApi.selectModule(moduleKey as 'class10' | 'class12' | 'college');
             }
 
             localStorage.setItem(storageKey, JSON.stringify({

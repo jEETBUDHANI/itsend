@@ -108,7 +108,7 @@ export default function WorkValuesTest() {
             try {
                 const token = localStorage.getItem('token');
                 if (token) {
-                    await fetch('http://localhost:5000/api/assessment/values', {
+                    await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/assessment/values`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

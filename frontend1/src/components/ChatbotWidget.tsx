@@ -5,7 +5,7 @@ import { X, Send, Loader2, Bot, User, MessageCircle, Sparkles, Minimize2 } from 
 import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -48,27 +48,84 @@ export default function ChatbotWidget() {
             timestamp: new Date().toISOString()
         };
 
-        setMessages(prev => [...prev, userMessage]);
+        // Initialize assistant message with empty content
+        const assistantMessage: Message = {
+            role: 'assistant',
+            content: '',
+            timestamp: new Date().toISOString()
+        };
+
+        setMessages(prev => [...prev, userMessage, assistantMessage]);
+        const assistantMessageIndex = messages.length + 1; // Index of the new assistant message
+        
         setInput('');
         setIsLoading(true);
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post(
-                `${API_URL}/services/mentor/chat`,
-                { message: textToSend },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            // Get last 5 messages for history (excluding the ones we just added)
+            const chatHistory = messages.slice(-5).map(m => ({
+                role: m.role,
+                content: m.content
+            }));
 
-            const assistantMessage: Message = {
-                role: 'assistant',
-                content: response.data.response,
-                followUpQuestions: response.data.follow_up_questions || [],
-                suggestedActions: response.data.suggested_actions || [],
-                timestamp: new Date().toISOString()
-            };
+            const response = await fetch(`${API_URL}/services/mentor/chat/stream`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ 
+                    message: textToSend,
+                    history: chatHistory
+                })
+            });
 
-            setMessages(prev => [...prev, assistantMessage]);
+            if (!response.ok) throw new Error('Failed to connect to AI mentor');
+
+            const reader = response.body?.getReader();
+            const decoder = new TextDecoder();
+            let fullResponseText = '';
+
+            if (reader) {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n');
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.substring(6));
+                                
+                                if (data.chunk) {
+                                    fullResponseText += data.chunk;
+                                    // Update the last message content in real-time
+                                    setMessages(prev => {
+                                        const newMessages = [...prev];
+                                        newMessages[newMessages.length - 1].content = fullResponseText;
+                                        return newMessages;
+                                    });
+                                } else if (data.done) {
+                                    // Final update with all metadata
+                                    setMessages(prev => {
+                                        const newMessages = [...prev];
+                                        newMessages[newMessages.length - 1].content = data.full_response;
+                                        newMessages[newMessages.length - 1].followUpQuestions = data.follow_up_questions;
+                                        return newMessages;
+                                    });
+                                } else if (data.error) {
+                                    throw new Error(data.error);
+                                }
+                            } catch (e) {
+                                console.error('Error parsing stream chunk:', e);
+                            }
+                        }
+                    }
+                }
+            }
         } catch (error: any) {
             console.error('Chat error:', error);
             toast({
@@ -77,11 +134,12 @@ export default function ChatbotWidget() {
                 variant: 'destructive'
             });
 
-            setMessages(prev => [...prev, {
-                role: 'assistant',
-                content: "Sorry, I'm having trouble connecting. Please check your internet and try again.",
-                timestamp: new Date().toISOString()
-            }]);
+            setMessages(prev => {
+                const newMessages = [...prev];
+                // Update the last message (which was the assistant's) with error
+                newMessages[newMessages.length - 1].content = "Sorry, I'm having trouble connecting. Please check your internet and try again.";
+                return newMessages;
+            });
         } finally {
             setIsLoading(false);
         }
@@ -154,7 +212,7 @@ export default function ChatbotWidget() {
                             <span className="font-bold text-sm">Shiv (AI Mentor)</span>
                             <Sparkles className="h-3 w-3 text-yellow-400" />
                         </div>
-                        <span className="text-xs text-muted-foreground">Online • Powered by Gemini</span>
+                        <span className="text-xs text-muted-foreground">Online • Powered by OpenRouter AI</span>
                     </div>
                 </div>
                 <div className="flex gap-1">
@@ -272,7 +330,7 @@ export default function ChatbotWidget() {
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={handleKeyPress}
                                 disabled={isLoading}
-                                className="flex-1 h-9 text-sm"
+                                className="flex-1 h-9 text-sm text-gray-900 bg-white border-gray-300 focus:ring-blue-500"
                                 autoFocus
                             />
                             <Button

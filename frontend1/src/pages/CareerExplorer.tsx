@@ -10,7 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { hasCompletedAllAssessments } from '@/lib/assessmentUtils';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}`;
 
 const careerColors: { [key: string]: string } = {
     "Software Engineer": "#3b82f6",
@@ -145,9 +145,9 @@ export default function CareerExplorer() {
                                         <p className="text-gray-300 mb-6">{personalizedCareer.desc}</p>
                                         <Button
                                             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 group"
-                                            onClick={() => navigate(`/roadmap`)}
+                                            onClick={() => navigate(`/careers/${encodeURIComponent(personalizedCareer.name)}`)}
                                         >
-                                            View Personalized Roadmap
+                                            View Career Details
                                             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                                         </Button>
                                     </CardContent>
@@ -197,9 +197,9 @@ export default function CareerExplorer() {
                                         <p className="text-gray-400 mb-6">{career.desc}</p>
                                         <Button
                                             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 group"
-                                            onClick={() => navigate(`/roadmap`)}
+                                            onClick={() => navigate(`/careers/${encodeURIComponent(career.name)}`)}
                                         >
-                                            View Roadmap
+                                            View Career Details
                                             <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                                         </Button>
                                     </CardContent>

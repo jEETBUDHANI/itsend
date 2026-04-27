@@ -32,6 +32,26 @@ import JobReadinessDashboard from "./pages/JobReadinessDashboard";
 import ActionPlanGenerator from "./pages/ActionPlanGenerator";
 import CareerSwitchSimulator from "./pages/CareerSwitchSimulator";
 import PlacementPrep from "./pages/PlacementPrep";
+import ModuleDashboard from "./pages/ModuleDashboard";
+import ModuleAssessments from "./pages/ModuleAssessments";
+import ModuleRecommendation from "./pages/ModuleRecommendation";
+import ModuleRoadmap from "./pages/ModuleRoadmap";
+import Class10Assessment from "./pages/Class10Assessment";
+import Class10Results from "./pages/Class10Results";
+import Class10StreamDetails from "./pages/Class10StreamDetails";
+import Class10Roadmap from "./pages/Class10Roadmap";
+import Class10Careers from "./pages/Class10Careers";
+import Class12Preview from "./pages/Class12Preview";
+import Class12Assessment from "./pages/Class12Assessment";
+import CollegeAssessment from "./pages/CollegeAssessment";
+import CollegeSkeleton from "./pages/CollegeSkeleton";
+import CollegeFoundation from "./pages/CollegeFoundation";
+import CollegeInternship from "./pages/CollegeInternship";
+import CollegePlacement from "./pages/CollegePlacement";
+import FinalYearAssessment from "./pages/FinalYearAssessment";
+import Year3InternshipAssessment from "./pages/Year3InternshipAssessment";
+import FoundationAssessment from "./pages/FoundationAssessment";
+import MockInterview from "./pages/MockInterview";
 
 const queryClient = new QueryClient();
 
@@ -58,13 +78,33 @@ const App = () => (
               <Route path="/assessments/personality" element={<ProtectedRoute><PersonalityTest /></ProtectedRoute>} />
               <Route path="/assessments/values" element={<ProtectedRoute><WorkValuesTest /></ProtectedRoute>} />
               <Route path="/assessments/risk" element={<ProtectedRoute><RiskToleranceTest /></ProtectedRoute>} />
+              <Route path="/class10-assessment" element={<ProtectedRoute><Class10Assessment /></ProtectedRoute>} />
+              <Route path="/class10-results" element={<ProtectedRoute><Class10Results /></ProtectedRoute>} />
+              <Route path="/class10-stream-details" element={<ProtectedRoute><Class10StreamDetails /></ProtectedRoute>} />
+              <Route path="/class10-roadmap" element={<ProtectedRoute><Class10Roadmap /></ProtectedRoute>} />
+              <Route path="/class10-careers" element={<ProtectedRoute><Class10Careers /></ProtectedRoute>} />
+              <Route path="/class12-preview" element={<ProtectedRoute><Class12Preview /></ProtectedRoute>} />
+              <Route path="/class12-assessment" element={<ProtectedRoute><Class12Assessment /></ProtectedRoute>} />
+              <Route path="/college-skeleton" element={<ProtectedRoute><CollegeSkeleton /></ProtectedRoute>} />
+              <Route path="/college-assessment" element={<ProtectedRoute><CollegeAssessment /></ProtectedRoute>} />
+              <Route path="/college/foundation" element={<ProtectedRoute><CollegeFoundation /></ProtectedRoute>} />
+              <Route path="/college/foundation/assessment" element={<ProtectedRoute><FoundationAssessment /></ProtectedRoute>} />
+              <Route path="/college/internship" element={<ProtectedRoute><CollegeInternship /></ProtectedRoute>} />
+              <Route path="/college/internship/assessment" element={<ProtectedRoute><Year3InternshipAssessment /></ProtectedRoute>} />
+              <Route path="/college/placement" element={<ProtectedRoute><CollegePlacement /></ProtectedRoute>} />
+              <Route path="/college/placement/assessment" element={<ProtectedRoute><FinalYearAssessment /></ProtectedRoute>} />
               <Route path="/holistic-profile" element={<ProtectedRoute><HolisticProfile /></ProtectedRoute>} />
               <Route path="/careers" element={<ProtectedRoute><CareerExplorer /></ProtectedRoute>} />
               <Route path="/careers/:id" element={<ProtectedRoute><CareerDetail /></ProtectedRoute>} />
               <Route path="/simulator" element={<ProtectedRoute><Simulator /></ProtectedRoute>} />
               <Route path="/mentor" element={<ProtectedRoute><AIMentor /></ProtectedRoute>} />
+              <Route path="/mock-interview" element={<ProtectedRoute><MockInterview /></ProtectedRoute>} />
               <Route path="/roadmap" element={<ProtectedRoute><Roadmap /></ProtectedRoute>} />
               <Route path="/progress" element={<ProtectedRoute><ProgressDashboard /></ProtectedRoute>} />
+                <Route path="/module-dashboard" element={<ProtectedRoute><ModuleDashboard /></ProtectedRoute>} />
+                <Route path="/module-assessments" element={<ProtectedRoute><ModuleAssessments /></ProtectedRoute>} />
+                <Route path="/module-recommendation" element={<ProtectedRoute><ModuleRecommendation /></ProtectedRoute>} />
+                <Route path="/module-roadmap" element={<ProtectedRoute><ModuleRoadmap /></ProtectedRoute>} />
                     <Route path="/careers/comparison" element={<ProtectedRoute><CareerComparison /></ProtectedRoute>} />
                     <Route path="/readiness" element={<ProtectedRoute><JobReadinessDashboard /></ProtectedRoute>} />
                     <Route path="/action-plan" element={<ProtectedRoute><ActionPlanGenerator /></ProtectedRoute>} />

@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 import os
+from sqlalchemy import inspect, text
 
 # Load environment variables
 load_dotenv()
@@ -11,6 +12,47 @@ load_dotenv()
 # Initialize extensions
 db = SQLAlchemy()
 jwt = JWTManager()
+
+
+def _migrate_sqlite_schema(app):
+    """Add missing columns to existing SQLite tables without dropping data."""
+    if not app.config['SQLALCHEMY_DATABASE_URI'].startswith('sqlite'):
+        return
+
+    user_columns = {
+        'user_role': "VARCHAR(50) DEFAULT 'graduate_student'",
+        'degree': 'VARCHAR(100)',
+        'specialization': 'VARCHAR(100)',
+        'graduation_year': 'INTEGER',
+        'current_year': 'VARCHAR(50)',
+        'current_skills': 'JSON',
+        'career_interests': 'JSON',
+        'academic_stage': 'VARCHAR(50)',
+        'education_module': 'VARCHAR(30)',
+        'module_goal': 'VARCHAR(255)',
+        'current_stream': 'VARCHAR(50)',
+        'target_exams': 'JSON',
+        'class_grade': 'VARCHAR(20)',
+    }
+
+    inspector = inspect(db.engine)
+    if not inspector.has_table('users'):
+        return
+
+    existing_columns = {column['name'] for column in inspector.get_columns('users')}
+    missing_columns = [
+        (column_name, column_type)
+        for column_name, column_type in user_columns.items()
+        if column_name not in existing_columns
+    ]
+
+    if not missing_columns:
+        return
+
+    with db.engine.begin() as connection:
+        for column_name, column_type in missing_columns:
+            connection.execute(text(f"ALTER TABLE users ADD COLUMN {column_name} {column_type}"))
+            print(f"[DB MIGRATION] Added missing column: users.{column_name}")
 
 def create_app():
     app = Flask(__name__)
@@ -32,8 +74,7 @@ def create_app():
                 "http://localhost:8080",
                 "http://localhost:8081",
                 "http://localhost:8082",
-                "http://localhost:80801",
-                "http://localhost:80802"
+                "http://localhost:5173"
             ],
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type", "Authorization"],
@@ -72,6 +113,14 @@ def create_app():
     from app.routes.admin import admin_bp
     from app.routes.recruiter import recruiter_bp
     from app.routes.graduate import graduate_bp
+    from app.routes.modules import modules_bp
+    from app.routes.class10_assessment import class10_bp
+    from app.routes.class12_assessment import class12_bp
+    from app.routes.college_assessment import college_bp
+    from app.routes.college_selection import college_skeleton_bp
+    from app.routes.final_year_assessment import final_year_bp
+    from app.routes.year3_internship_assessment import year3_bp
+    from app.routes.foundation import foundation_bp
     
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(prediction_bp, url_prefix='/api/predict')
@@ -87,10 +136,19 @@ def create_app():
     app.register_blueprint(admin_bp, url_prefix='/api/admin')
     app.register_blueprint(recruiter_bp, url_prefix='/api/recruiter')
     app.register_blueprint(graduate_bp, url_prefix='/api/graduate')
+    app.register_blueprint(modules_bp, url_prefix='/api/modules')
+    app.register_blueprint(class10_bp)  # Already has /api/class10 prefix in blueprint
+    app.register_blueprint(class12_bp)  # Already has /api/class12 prefix in blueprint
+    app.register_blueprint(college_bp)  # Already has /api/college prefix in blueprint
+    app.register_blueprint(college_skeleton_bp, url_prefix='/api/college/selection')
+    app.register_blueprint(final_year_bp)  # Already has /api/final-year prefix in blueprint
+    app.register_blueprint(year3_bp)  # Already has /api/year3-internship prefix in blueprint
+    app.register_blueprint(foundation_bp)  # Already has /api/foundation prefix in blueprint
     
     # Create tables
     with app.app_context():
         db.create_all()
+        _migrate_sqlite_schema(app)
     
     @app.route('/')
     def index():

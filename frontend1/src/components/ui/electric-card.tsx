@@ -144,7 +144,7 @@ const ElectricCard = ({
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         :root {
           --color-neutral-900: oklch(0.185 0 0);
         }
