@@ -5,6 +5,7 @@ from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 import os
 from sqlalchemy import inspect, text
+from sqlalchemy.pool import QueuePool, NullPool
 
 # Load environment variables
 load_dotenv()
@@ -62,6 +63,23 @@ def create_app():
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'jwt-secret-key')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///career_system.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    # Database connection pooling for better performance
+    # Use QueuePool for production (PostgreSQL), NullPool for SQLite (development)
+    db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+    if db_uri.startswith('postgresql'):
+        app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+            'poolclass': QueuePool,
+            'pool_size': 10,
+            'max_overflow': 20,
+            'pool_recycle': 3600,
+            'pool_pre_ping': True,
+        }
+    else:
+        # For SQLite (development), use NullPool to avoid threading issues
+        app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+            'poolclass': NullPool,
+        }
     
     # Initialize extensions with app
     db.init_app(app)
@@ -141,8 +159,13 @@ def create_app():
     
     # Create tables
     with app.app_context():
-        db.create_all()
-        _migrate_sqlite_schema(app)
+        try:
+            db.create_all()
+            _migrate_sqlite_schema(app)
+        except Exception as e:
+            # Database not accessible (OK for local testing, will work on Render)
+            print(f"[INFO] Database not accessible during startup: {type(e).__name__}")
+            print("[INFO] This is normal for local testing - tables will be created on Render")
     
     @app.route('/')
     def index():

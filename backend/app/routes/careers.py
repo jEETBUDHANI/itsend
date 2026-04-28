@@ -4,21 +4,38 @@ Public access to browse career options
 """
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy.orm import joinedload
 from app.models_extended import CareerPath, ExamPreparation, Job
 from app import db
 from app.data.career_library import CAREER_LIBRARY
 
 careers_bp = Blueprint('careers', __name__)
 
+# Pagination constants
+DEFAULT_PAGE = 1
+DEFAULT_PER_PAGE = 20
+MAX_PER_PAGE = 100
+
 
 @careers_bp.route('/paths', methods=['GET'])
 def get_career_paths():
-    """Get all career paths (Public)"""
+    """Get all career paths with pagination (Public)"""
     try:
-        paths = CareerPath.query.all()
+        page = request.args.get('page', DEFAULT_PAGE, type=int)
+        per_page = min(request.args.get('per_page', DEFAULT_PER_PAGE, type=int), MAX_PER_PAGE)
+        
+        # Eager load relationships to avoid N+1 queries
+        pagination = CareerPath.query.options(
+            joinedload(CareerPath.jobs),
+            joinedload(CareerPath.exam_preparations)
+        ).paginate(page=page, per_page=per_page, error_out=False)
+        
         return jsonify({
             'success': True,
-            'career_paths': [path.to_dict() for path in paths]
+            'career_paths': [path.to_dict() for path in pagination.items],
+            'total': pagination.total,
+            'pages': pagination.pages,
+            'current_page': page
         }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -26,13 +43,17 @@ def get_career_paths():
 
 @careers_bp.route('/paths/<int:path_id>', methods=['GET'])
 def get_career_path(path_id):
-    """Get single career path details (Public)"""
+    """Get single career path details with eager loading (Public)"""
     try:
-        path = CareerPath.query.get_or_404(path_id)
+        # Use eager loading to fetch path with related exams and jobs in ONE query
+        path = CareerPath.query.options(
+            joinedload(CareerPath.exam_preparations),
+            joinedload(CareerPath.jobs)
+        ).get_or_404(path_id)
         
-        # Get associated exams and jobs
-        exams = ExamPreparation.query.filter_by(career_path_id=path_id).all()
-        jobs = Job.query.filter_by(career_path_id=path_id).all()
+        # Data is already loaded, no separate queries needed
+        exams = path.exam_preparations
+        jobs = path.jobs
         
         return jsonify({
             'success': True,
@@ -46,12 +67,23 @@ def get_career_path(path_id):
 
 @careers_bp.route('/exams', methods=['GET'])
 def get_exams():
-    """Get all exam preparations (Public)"""
+    """Get all exam preparations with pagination (Public)"""
     try:
-        exams = ExamPreparation.query.all()
+        page = request.args.get('page', DEFAULT_PAGE, type=int)
+        per_page = min(request.args.get('per_page', DEFAULT_PER_PAGE, type=int), MAX_PER_PAGE)
+        
+        pagination = ExamPreparation.query.paginate(
+            page=page, 
+            per_page=per_page, 
+            error_out=False
+        )
+        
         return jsonify({
             'success': True,
-            'exams': [exam.to_dict() for exam in exams]
+            'exams': [exam.to_dict() for exam in pagination.items],
+            'total': pagination.total,
+            'pages': pagination.pages,
+            'current_page': page
         }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -59,7 +91,7 @@ def get_exams():
 
 @careers_bp.route('/jobs', methods=['GET'])
 def get_jobs():
-    """Get all jobs - limited info for public, full for authenticated"""
+    """Get all jobs with pagination and filters"""
     try:
         # Check if user is authenticated
         from flask_jwt_extended import verify_jwt_in_request
@@ -68,6 +100,10 @@ def get_jobs():
             is_authenticated = True
         except:
             is_authenticated = False
+        
+        # Pagination
+        page = request.args.get('page', DEFAULT_PAGE, type=int)
+        per_page = min(request.args.get('per_page', DEFAULT_PER_PAGE, type=int), MAX_PER_PAGE)
         
         # Query filters
         career_path_id = request.args.get('career_path_id', type=int)
@@ -83,7 +119,8 @@ def get_jobs():
         if max_salary:
             query = query.filter(Job.avg_salary_max <= max_salary)
         
-        jobs = query.all()
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+        jobs = pagination.items
         
         # For public users, show limited info
         if not is_authenticated:
@@ -102,7 +139,9 @@ def get_jobs():
         return jsonify({
             'success': True,
             'jobs': jobs_data,
-            'total': len(jobs_data),
+            'total': pagination.total,
+            'pages': pagination.pages,
+            'current_page': page,
             'authenticated': is_authenticated
         }), 200
     except Exception as e:
@@ -112,15 +151,17 @@ def get_jobs():
 @careers_bp.route('/jobs/<int:job_id>', methods=['GET'])
 @jwt_required()
 def get_job_details(job_id):
-    """Get detailed job information (Requires login)"""
+    """Get detailed job information with eager loading (Requires login)"""
     try:
-        job = Job.query.get_or_404(job_id)
-        career_path = CareerPath.query.get(job.career_path_id)
+        # Use eager loading to fetch job with related career_path in one query
+        job = Job.query.options(
+            joinedload(Job.career_path)
+        ).get_or_404(job_id)
         
         return jsonify({
             'success': True,
             'job': job.to_dict(),
-            'career_path': career_path.to_dict() if career_path else None
+            'career_path': job.career_path.to_dict() if job.career_path else None
         }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
