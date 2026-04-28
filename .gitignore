@@ -1,0 +1,21 @@
+# Environments
+.env
+.venv
+.venv-1
+
+# Python
+__pycache__/
+*.pyc
+instance/
+backend/career_system.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Node
+node_modules/
+dist/
+*.log
+
+# OS
+.DS_Store
