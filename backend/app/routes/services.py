@@ -175,6 +175,7 @@ def chat_with_mentor():
         if user:
             user_context['name'] = user.full_name
             user_context['email'] = user.email
+            user_context['academic_stage'] = user.academic_stage
         
         # Get holistic profile
         holistic = HolisticProfile.query.filter_by(user_id=user_id).first()

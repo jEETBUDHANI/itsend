@@ -29,6 +29,7 @@ class AICareerMentor:
         personality = user_profile.get('personality_type', '') if user_profile else ''
         careers = user_profile.get('recommended_careers', []) if user_profile else []
         clarity_score = user_profile.get('clarity_score', 'Unknown') if user_profile else 'Unknown'
+        academic_stage = user_profile.get('academic_stage', 'Unknown') if user_profile else 'Unknown'
         career_str = ", ".join(careers) if careers else "None yet"
         
         # Format history for Gemini
@@ -43,6 +44,7 @@ class AICareerMentor:
 
 User Context:
 - User Name: {first_name}
+- Academic Stage: {academic_stage}
 - Personality: {personality}
 - Recommended Careers: {career_str}
 
@@ -55,7 +57,10 @@ CONCISE MODE:
 Guidelines:
 - Be helpful, conversational, and practical.
 - Use simple language and emojis sparingly.
-- Focus on Class 10/12/College guidance and programming skills.
+- Focus your guidance specifically on the student's current academic stage ({academic_stage}).
+- For Class 10: Focus on stream selection (PCM/PCB/Commerce/Arts) and foundational skills.
+- For Class 12: Focus on college admissions, entrance exams, and specific degree paths.
+- For College: Focus on internships, job placements, and advanced skill building.
 """
 
         try:

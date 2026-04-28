@@ -212,7 +212,7 @@ export default function ChatbotWidget() {
                             <span className="font-bold text-sm">Shiv (AI Mentor)</span>
                             <Sparkles className="h-3 w-3 text-yellow-400" />
                         </div>
-                        <span className="text-xs text-muted-foreground">Online • Powered by OpenRouter AI</span>
+                        <span className="text-xs text-muted-foreground">Online • Powered by Gemini AI</span>
                     </div>
                 </div>
                 <div className="flex gap-1">
