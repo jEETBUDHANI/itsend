@@ -39,6 +39,15 @@ export default function ChatbotWidget() {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
+    const speak = (text: string) => {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        window.speechSynthesis.speak(utterance);
+    };
+
     const handleSend = async (messageText?: string) => {
         const textToSend = messageText || input.trim();
         if (!textToSend || isLoading) return;
