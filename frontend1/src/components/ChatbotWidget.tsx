@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, Send, Loader2, Bot, User, MessageCircle, Sparkles, Minimize2 } from 'lucide-react';
+import { X, Send, Loader2, Bot, User, MessageCircle, Sparkles, Minimize2, Volume2, VolumeX } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
 
@@ -32,6 +32,7 @@ export default function ChatbotWidget() {
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isSpeechEnabled, setIsSpeechEnabled] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -110,12 +111,16 @@ export default function ChatbotWidget() {
                                     });
                                 } else if (data.done) {
                                     // Final update with all metadata
+                                    const finalResponse = data.full_response;
                                     setMessages(prev => {
                                         const newMessages = [...prev];
-                                        newMessages[newMessages.length - 1].content = data.full_response;
+                                        newMessages[newMessages.length - 1].content = finalResponse;
                                         newMessages[newMessages.length - 1].followUpQuestions = data.follow_up_questions;
                                         return newMessages;
                                     });
+                                    if (isSpeechEnabled) {
+                                        speak(finalResponse);
+                                    }
                                 } else if (data.error) {
                                     throw new Error(data.error);
                                 }
@@ -223,6 +228,19 @@ export default function ChatbotWidget() {
                         onClick={() => setIsMinimized(!isMinimized)}
                     >
                         <Minimize2 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className={`h-8 w-8 ${isSpeechEnabled ? 'text-blue-500 bg-blue-500/10' : 'text-muted-foreground'}`}
+                        onClick={() => {
+                            setIsSpeechEnabled(!isSpeechEnabled);
+                            if (!isSpeechEnabled) toast({ title: "Voice Mode On", description: "AI responses will be read aloud." });
+                            else window.speechSynthesis.cancel();
+                        }}
+                        title={isSpeechEnabled ? "Disable Voice" : "Enable Voice"}
+                    >
+                        {isSpeechEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
                     </Button>
                     <Button
                         variant="ghost"

@@ -8,20 +8,33 @@ import { lazy, Suspense as SuspenseComponent } from "react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
-// Loading component
+// Loading component - Premium Aesthetic
 const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-screen">
-    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+  <div className="flex flex-col items-center justify-center min-h-screen bg-black relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-pulse" />
+    <div className="relative z-10 flex flex-col items-center">
+      <div className="relative h-20 w-20 mb-8">
+        <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
+        <div className="absolute inset-0 rounded-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="h-10 w-10 bg-gradient-to-br from-primary to-secondary rounded-xl shadow-lg shadow-primary/20 animate-bounce flex items-center justify-center">
+            <span className="text-white text-xs font-bold">CP</span>
+          </div>
+        </div>
+      </div>
+      <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent animate-pulse">
+        CareerPath Pro
+      </h2>
+      <p className="text-gray-500 text-sm mt-2 tracking-widest uppercase">Optimizing Your Future...</p>
+    </div>
   </div>
 );
 
-// Critical pages - load directly for faster initial load
-import Landing from "./pages/Landing";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import NotFound from "./pages/NotFound";
-
-// Lazy load all other pages for code splitting
+// Lazy load ALL pages for code splitting and better performance
+const Landing = lazy(() => import("./pages/Landing"));
+const Login = lazy(() => import("./pages/Login"));
+const Signup = lazy(() => import("./pages/Signup"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const PersonalityTest = lazy(() => import("./pages/PersonalityTest"));
@@ -84,55 +97,57 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/dashboard-public" element={<SuspenseComponent fallback={<PageLoader />}><PublicDashboard /></SuspenseComponent>} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/onboarding" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><Onboarding /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/dashboard" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><Dashboard /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/test" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><PersonalityTest /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/results/:id" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><Results /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><Profile /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/assessments" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><AssessmentCenter /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/assessments/aptitude" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><AptitudeTest /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/assessments/personality" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><PersonalityTest /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/assessments/values" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><WorkValuesTest /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/assessments/risk" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><RiskToleranceTest /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/class10-assessment" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><Class10Assessment /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/class10-results" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><Class10Results /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/class10-stream-details" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><Class10StreamDetails /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/class10-roadmap" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><Class10Roadmap /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/class10-careers" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><Class10Careers /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/class12-preview" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><Class12Preview /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/class12-assessment" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><Class12Assessment /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/college-skeleton" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><CollegeSkeleton /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/college-assessment" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><CollegeAssessment /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/college/foundation" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><CollegeFoundation /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/college/foundation/assessment" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><FoundationAssessment /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/college/internship" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><CollegeInternship /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/college/internship/assessment" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><Year3InternshipAssessment /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/college/placement" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><CollegePlacement /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/college/placement/assessment" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><FinalYearAssessment /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/holistic-profile" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><HolisticProfile /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/careers" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><CareerExplorer /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/careers/:id" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><CareerDetail /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/simulator" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><Simulator /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/mentor" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><AIMentor /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/mock-interview" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><MockInterview /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/roadmap" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><Roadmap /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/progress" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><ProgressDashboard /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/module-dashboard" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><ModuleDashboard /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/module-assessments" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><ModuleAssessments /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/module-recommendation" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><ModuleRecommendation /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/module-roadmap" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><ModuleRoadmap /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/careers/comparison" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><CareerComparison /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/readiness" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><JobReadinessDashboard /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/action-plan" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><ActionPlanGenerator /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/career-switch" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><CareerSwitchSimulator /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="/placement-prep" element={<ProtectedRoute><SuspenseComponent fallback={<PageLoader />}><PlacementPrep /></SuspenseComponent></ProtectedRoute>} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/dashboard-public" element={<PublicDashboard />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/test" element={<ProtectedRoute><PersonalityTest /></ProtectedRoute>} />
+                <Route path="/results/:id" element={<ProtectedRoute><Results /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                <Route path="/assessments" element={<ProtectedRoute><AssessmentCenter /></ProtectedRoute>} />
+                <Route path="/assessments/aptitude" element={<ProtectedRoute><AptitudeTest /></ProtectedRoute>} />
+                <Route path="/assessments/personality" element={<ProtectedRoute><PersonalityTest /></ProtectedRoute>} />
+                <Route path="/assessments/values" element={<ProtectedRoute><WorkValuesTest /></ProtectedRoute>} />
+                <Route path="/assessments/risk" element={<ProtectedRoute><RiskToleranceTest /></ProtectedRoute>} />
+                <Route path="/class10-assessment" element={<ProtectedRoute><Class10Assessment /></ProtectedRoute>} />
+                <Route path="/class10-results" element={<ProtectedRoute><Class10Results /></ProtectedRoute>} />
+                <Route path="/class10-stream-details" element={<ProtectedRoute><Class10StreamDetails /></ProtectedRoute>} />
+                <Route path="/class10-roadmap" element={<ProtectedRoute><Class10Roadmap /></ProtectedRoute>} />
+                <Route path="/class10-careers" element={<ProtectedRoute><Class10Careers /></ProtectedRoute>} />
+                <Route path="/class12-preview" element={<ProtectedRoute><Class12Preview /></ProtectedRoute>} />
+                <Route path="/class12-assessment" element={<ProtectedRoute><Class12Assessment /></ProtectedRoute>} />
+                <Route path="/college-skeleton" element={<ProtectedRoute><CollegeSkeleton /></ProtectedRoute>} />
+                <Route path="/college-assessment" element={<ProtectedRoute><CollegeAssessment /></ProtectedRoute>} />
+                <Route path="/college/foundation" element={<ProtectedRoute><CollegeFoundation /></ProtectedRoute>} />
+                <Route path="/college/foundation/assessment" element={<ProtectedRoute><FoundationAssessment /></ProtectedRoute>} />
+                <Route path="/college/internship" element={<ProtectedRoute><CollegeInternship /></ProtectedRoute>} />
+                <Route path="/college/internship/assessment" element={<ProtectedRoute><Year3InternshipAssessment /></ProtectedRoute>} />
+                <Route path="/college/placement" element={<ProtectedRoute><CollegePlacement /></ProtectedRoute>} />
+                <Route path="/college/placement/assessment" element={<ProtectedRoute><FinalYearAssessment /></ProtectedRoute>} />
+                <Route path="/holistic-profile" element={<ProtectedRoute><HolisticProfile /></ProtectedRoute>} />
+                <Route path="/careers" element={<ProtectedRoute><CareerExplorer /></ProtectedRoute>} />
+                <Route path="/careers/:id" element={<ProtectedRoute><CareerDetail /></ProtectedRoute>} />
+                <Route path="/simulator" element={<ProtectedRoute><Simulator /></ProtectedRoute>} />
+                <Route path="/mentor" element={<ProtectedRoute><AIMentor /></ProtectedRoute>} />
+                <Route path="/mock-interview" element={<ProtectedRoute><MockInterview /></ProtectedRoute>} />
+                <Route path="/roadmap" element={<ProtectedRoute><Roadmap /></ProtectedRoute>} />
+                <Route path="/progress" element={<ProtectedRoute><ProgressDashboard /></ProtectedRoute>} />
+                <Route path="/module-dashboard" element={<ProtectedRoute><ModuleDashboard /></ProtectedRoute>} />
+                <Route path="/module-assessments" element={<ProtectedRoute><ModuleAssessments /></ProtectedRoute>} />
+                <Route path="/module-recommendation" element={<ProtectedRoute><ModuleRecommendation /></ProtectedRoute>} />
+                <Route path="/module-roadmap" element={<ProtectedRoute><ModuleRoadmap /></ProtectedRoute>} />
+                <Route path="/careers/comparison" element={<ProtectedRoute><CareerComparison /></ProtectedRoute>} />
+                <Route path="/readiness" element={<ProtectedRoute><JobReadinessDashboard /></ProtectedRoute>} />
+                <Route path="/action-plan" element={<ProtectedRoute><ActionPlanGenerator /></ProtectedRoute>} />
+                <Route path="/career-switch" element={<ProtectedRoute><CareerSwitchSimulator /></ProtectedRoute>} />
+                <Route path="/placement-prep" element={<ProtectedRoute><PlacementPrep /></ProtectedRoute>} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>

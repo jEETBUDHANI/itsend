@@ -36,8 +36,17 @@ import {
   Lightbulb,
   Eye,
   Award,
-  Shield
+  Shield,
+  Menu,
+  X
 } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -877,14 +886,74 @@ const Dashboard = () => {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-white/10 bg-black/60 backdrop-blur-xl">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link to="/dashboard" className="flex items-center gap-2.5 group">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg shadow-blue-500/25">
-              <Brain className="h-5 w-5 text-white" />
+          <div className="flex items-center gap-2">
+            {/* Mobile Menu */}
+            <div className="md:hidden">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="text-gray-300">
+                    <Menu className="h-6 w-6" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="bg-black/95 border-white/10 backdrop-blur-xl text-white">
+                  <SheetHeader>
+                    <SheetTitle className="text-left flex items-center gap-2">
+                      <div className="p-1.5 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+                        <Brain className="h-4 w-4 text-white" />
+                      </div>
+                      <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-bold">
+                        CareerPath Pro
+                      </span>
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="flex flex-col gap-2 mt-8">
+                    {(userModule === 'class10' ? class10NavItems : userModule === 'class12' ? class12NavItems : userModule === 'college' ? collegeNavItems : [
+                      { label: 'Assessments', path: '/assessments' },
+                      { label: 'Careers', path: '/careers' },
+                      { label: 'Roadmap', path: '/roadmap' },
+                      { label: 'Progress', path: '/progress' },
+                      { label: 'AI Mentor', path: '/mentor' }
+                    ]).map((item) => (
+                      <Link
+                        key={`${item.path}-${item.label}`}
+                        to={item.path}
+                        className="px-4 py-3 text-lg text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all font-medium"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                    <div className="mt-8 pt-8 border-t border-white/10">
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start text-gray-400 hover:text-white gap-3 px-4"
+                        onClick={() => navigate('/profile')}
+                      >
+                        <User className="h-5 w-5" />
+                        Profile Settings
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10 gap-3 px-4 mt-2"
+                        onClick={handleLogout}
+                      >
+                        <LogOut className="h-5 w-5" />
+                        Logout
+                      </Button>
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              CareerPath Pro
-            </span>
-          </Link>
+
+            <Link to="/dashboard" className="flex items-center gap-2.5 group">
+              <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg shadow-blue-500/25">
+                <Brain className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                CareerPath Pro
+              </span>
+            </Link>
+          </div>
 
           <nav className="hidden md:flex items-center gap-1">
             {(userModule === 'class10' ? class10NavItems : userModule === 'class12' ? class12NavItems : userModule === 'college' ? collegeNavItems : [
